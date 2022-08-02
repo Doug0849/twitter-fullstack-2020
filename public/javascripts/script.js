@@ -70,6 +70,8 @@ const tools = {
   }
 }
 
+tools.closeAlert()
+
 const repliesController = {
   showReplyModel: tid => {
     const avatar = document.querySelector(`#avatar-${tid}`).src
@@ -374,4 +376,28 @@ const followshipController = {
   }
 }
 
-tools.closeAlert()
+const form = document.querySelector('.needs-validation')
+form.addEventListener('submit', function (event) {
+  if (!form.checkValidity()) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+  form.classList.add('was-validated')
+})
+
+const password = document.getElementById('password')
+const checkPassword = document.getElementById('checkPassword')
+function validatePassword () {
+  if (password.value !== checkPassword.value) {
+    checkPassword.setCustomValidity(' ')
+  } else {
+    checkPassword.setCustomValidity('')
+  }
+}
+password.onchange = validatePassword
+checkPassword.onkeyup = validatePassword
+const name = document.getElementById('name')
+const nameLength = document.getElementById('name-length')
+name.addEventListener('input', function (event) {
+  nameLength.textContent = name.value.length + '/50'
+})
