@@ -11,6 +11,7 @@ const session = require('express-session')
 const methodOverride = require('method-override')
 const passport = require('./config/passport')
 
+require('./config/server-socket-io')
 const handlebarsHelpers = require('./helpers/handlerbars-helpers')
 const routes = require('./routes')
 
