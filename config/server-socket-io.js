@@ -46,14 +46,8 @@ io.on('connection', async socket => {
   // --------------------------------------------------------
   // 伺服器收到 socket.on，參數事件名稱 'send-message' 時，
   // 將從客戶端發來的多個參數用一個函式處理。
-  socket.on('send-message', (who, message, room, time) => {
-    if (room === '') {
-      socket.broadcast.emit('receive-message', who, message, time)
-    } else {
-      // 這個to的用法是傳給某個使用者ID訊息，其他人看不到。
-      // 所以將其他使用者id貼到room的input，就可以拿這個參數來傳私訊
-      socket.to(room).emit('receive-message', who, message)
-    }
+  socket.on('send-message', (someoneAvatar, message, time, socketId) => {
+    socket.broadcast.emit('receive-message', someoneAvatar, message, time, socketId)
   })
   // --------------------------------------------------------
   // 收到斷線訊息後的處理

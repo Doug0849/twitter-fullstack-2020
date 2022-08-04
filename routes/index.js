@@ -5,7 +5,7 @@ const admin = require('./modules/admin')
 const users = require('./modules/users')
 const tweets = require('./modules/tweets')
 const api = require('./modules/api')
-const chat = require('./modules/chat')
+const chatroom = require('./modules/chatroom')
 
 const { authenticatedUser } = require('../middleware/auth')
 const {
@@ -19,7 +19,7 @@ router.use('/admin', admin) // 未添加認證
 router.use('/users', authenticatedUser, users)
 router.use('/tweets', authenticatedUser, tweets)
 router.use('/api', authenticatedUser, api)
-router.use('/chat/', authenticatedUser, chat)
+router.use('/chatroom/', authenticatedUser, chatroom)
 
 router.post('/signup', userController.signUp)
 router.get('/signup', userController.signUpPage)
