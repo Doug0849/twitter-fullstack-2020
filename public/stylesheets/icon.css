@@ -273,3 +273,41 @@ i.outline-chat{
     width: calc(var(--base-size) * 1.5);
     height: calc(var(--base-size) * 1.5);
 }
+i.default-chatroom {
+    background-image: url('./svgs/default-chatroom.svg');
+    width: calc(var(--base-size) * 11.125);
+    height: calc(var(--base-size) * 3.625);
+    transition: filter 0.2s;
+}
+i.default-chatroom:hover {
+    filter: var(--base-filter);
+}
+i.active-chatroom {
+    background-image: url('./svgs/active-chatroom.svg');
+    width: calc(var(--base-size) * 11.125);
+    height: calc(var(--base-size) * 3.625);
+}
+i.default-private {
+    background-image: url('./svgs/default-private.svg');
+    width: calc(var(--base-size) * 11.125);
+    height: calc(var(--base-size) * 3.625);
+    transition: filter 0.2s;
+}
+i.default-private:hover {
+    filter: var(--base-filter);
+}
+i.active-private {
+    background-image: url('./svgs/active-private.svg');
+}
+i.default-notice {
+    background-image: url('./svgs/default-notice.svg');
+    width: calc(var(--base-size) * 11.125);
+    height: calc(var(--base-size) * 3.625);
+    transition: filter 0.2s;
+}
+i.default-notice:hover{
+    filter: var(--base-filter);
+}
+i.active-notice {
+    background-image: url('./svgs/active-notice.svg');
+}
