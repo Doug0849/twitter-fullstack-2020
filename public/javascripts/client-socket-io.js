@@ -62,7 +62,7 @@ socket.on('disconnect-message', (name, connectUsers) => {
 
 // -------------------------------------------------
 // function
-function noticeOnline(userName) {
+function noticeOnline (userName) {
   mainLogs.innerHTML += `
   <div class="row g-0 justify-content-center mb-2">
               <span
@@ -70,47 +70,44 @@ function noticeOnline(userName) {
             </div>`
 }
 
-function displayMessage(someoneAvatar, message, time) {
+function displayMessage (someoneAvatar, message, time) {
   mainLogs.innerHTML += `
-  <div class="row g-0 align-items-end justify-content-end mb-2">
-              <div class="col-7">
-                <p class="sended-msg bg-brand fs-6 py-2 px-3 mb-0 fw-light text-white"
+  <div class="row g-0 align-items-end justify-content-end mb-2 me-2">
+              <div class="col-7 row justify-content-end">
+                <p class="col-auto sended-msg bg-brand fs-6 py-2 px-3 mb-0 fw-light text-white"
                   style="border-radius: 1rem 1rem 0 1rem;">
                   ${message}
                 </p>
-                <small class="msg-time text-black-50 fw-bold float-end" style="font-size: 0.5rem;">${time}</small>
               </div>
-              <div class="col-1" style="padding-bottom:20px">
-                <img src="${someoneAvatar}" alt="" class="logs-avatar ms-2 rounded-circle"
-                  style="object-fit: cover; height: 40px; weight:40px;">
-              </div>
+                <small class="col-12 msg-time text-black-50 fw-bold text-end" style="font-size: 0.5rem;">${time}</small>
             </div>
   `
 }
 
-function receiveMessage(someoneAvatar, message, time) {
+function receiveMessage (someoneAvatar, message, time) {
   mainLogs.innerHTML += `
-  <div class="row g-0 align-items-end justify-content-start mb-2">
-              <div class="col-1" style="padding-bottom:20px">
+  <div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
+              <div class="col-1">
                 <img src="${someoneAvatar}" alt="" class="logs-avatar ms-2 rounded-circle"
                   style="object-fit: cover; height: 40px; weight:40px;">
               </div>
-              <div class="col-7">
-                <p class="received-msg bg-secondary bg-opacity-25 fs-6 py-2 px-3 mb-0 fw-light"
-                  style="border-radius: 1rem 1rem 1rem 0;">
+              <div class="col-11 row justify-content-start">
+                <p class="col-auto received-msg bg-secondary bg-opacity-25 fs-6 py-2 px-3 mb-0 fw-light"
+                  style="border-radius: 1rem 1rem 1rem 0; max-weight:50%; margin-left: 20px;">
                   ${message}
                 </p>
-                <small class="msg-time text-black-50 fw-bold float-start" style="font-size: 0.5rem;">${time}</small>
               </div>
+                <small class="col-12 msg-time text-black-50 fw-bold text-start" style="font-size: 0.5rem; margin-left: 51px;">${time}</small>
             </div>
   `
 }
 
-function updateconnectUsers(onlineList) {
+function updateconnectUsers (onlineList) {
   connectUsers.innerHTML = ''
   onlineList.forEach(user => {
-    connectUsers.innerHTML = `
-    <div class="user-wrapper border-bottom mt-2 mb-2">
+    connectUsers.innerHTML =
+      `
+    <div class="user-wrapper border-bottom mb-2 p-2">
     <img src="${user.avatar}" alt="" class="avatar-sm rounded-circle" id="chatroom-avatar-{{this.id}}">
     <strong>${user.name}</strong>
     <span>@${user.account}</span>
@@ -119,10 +116,10 @@ function updateconnectUsers(onlineList) {
   })
 }
 
-function disconnectMessage(name) {
+function disconnectMessage (name) {
   mainLogs.innerHTML += `
   <div class="row g-0 justify-content-center mb-2">
               <span
-                class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">${userName}已離開</span>
+                class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">${name}已離開</span>
             </div>`
 }

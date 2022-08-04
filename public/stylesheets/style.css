@@ -327,7 +327,7 @@ input.form-control:focus {
   height: 100%;
 }
 #main-logs {
-  max-height: 600px;
+  max-height: calc(100vh - 105px);
   overflow-y: scroll;
 }
 

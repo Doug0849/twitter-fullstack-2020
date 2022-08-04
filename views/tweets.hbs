@@ -115,6 +115,7 @@
             </div>
           </div>
         </div>
+        <div class="tweet-footer">loading</div>
       </div>
       {{!-- 推文卡片結束 --}}
     </div>
@@ -122,3 +123,16 @@
   {{!-- 中央部分結束 --}}
   {{> recommend-follow }}
 </div>
+
+<script>
+  const end = document.querySelector('.tweet-footer')
+
+  const intersectionObserver = new IntersectionObserver(
+    function (entries) {
+      if (entries[0].intersectionRatio <= 0) return
+      console.log('Loaded new items');
+    })
+
+  // 開始觀察
+  intersectionObserver.observe(end)
+</script>
