@@ -1,35 +1,36 @@
-// server 端用物件來建立 socket.io，
 const { Server } = require('socket.io')
+const { User, Message } = require('../models/')
 
-// 建立伺服器，PORT為3200
 const io = new Server(3200, {
-  // 伺服器雖然架在3200，但是是透過 express.js localhost:3000 才進來的
-  cors: {
-    origin: ['http://localhost:3000']
-  }
+  cors: { origin: ['http://localhost:3000'] }
 })
 
-// 伺服器連線時
 io.on('connection', async socket => {
-  // 有人連線先cosole.log他的id
-  console.log(socket.id)
-  // 將所有使用者存起來
+  const userId = socket.handshake.query.userId
+  // 確認伺服器裡面沒有重複使用者
+  // if (sockets.some(socket => socket.data.id === userId)) {
+  //   return socket.disconnect()
+  // }
+  const user = await User.findByPk(userId, { raw: true })
   let sockets = await io.fetchSockets()
-  // --------------------------------------------------------
-  // 回應connecting事件處理方式，將傳來的name傳給所有人(io.emit包含自己)
-  socket.on('connecting', self => {
+  const messages = await Message.findAll({
+    include: {
+      model: User,
+      attributes: ['name', 'avatar'],
+      as: 'Sender'
+    },
+    raw: true,
+    nest: true,
+    order: [['createdAt', 'ASC']]
+  })
+
+  socket.on('connecting', async () => {
     const userList = []
-    if (self) {
-      // 確認伺服器裡面沒有重複使用者
-      // const joinUserId = self.id
-      // if (sockets.some(socket => socket.data.id === joinUserId)) {
-      //   return socket.disconnect()
-      // }
-      // 將自己的資料丟進自己的socket中
-      socket.data.id = self.id
-      socket.data.name = self.name
-      socket.data.account = self.account
-      socket.data.avatar = self.avatar
+    if (user) {
+      socket.data.id = user.id
+      socket.data.name = user.name
+      socket.data.account = user.account
+      socket.data.avatar = user.avatar
       if (sockets) {
         sockets.forEach((socket, i) => {
           userList[i] = {
@@ -40,20 +41,27 @@ io.on('connection', async socket => {
           }
         })
       }
-      io.emit('connecting', self.name, userList)
+      const messageData = {
+        senderId: socket.data.id,
+        receiveId: null,
+        content: '上線了'
+      }
+      await Message.create(messageData)
+      io.emit('connecting', socket.data.name, userList, messages)
     }
   })
-  // --------------------------------------------------------
-  // 伺服器收到 socket.on，參數事件名稱 'send-message' 時，
-  // 將從客戶端發來的多個參數用一個函式處理。
-  socket.on('send-message', (someoneAvatar, message, time) => {
-    socket.broadcast.emit('receive-message', someoneAvatar, message, time)
+  socket.on('send-message', async (message, time) => {
+    const messageData = {
+      senderAvatar: socket.data.avatar,
+      senderId: socket.data.id,
+      receiveId: null,
+      content: message
+    }
+    await Message.create(messageData)
+    socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
   })
-  // --------------------------------------------------------
-  // 收到斷線訊息後的處理
   socket.on('disconnect', async () => {
     const userList = []
-    // 重新取得名單
     sockets = await io.fetchSockets()
     if (sockets) {
       sockets.forEach((socket, i) => {
@@ -65,7 +73,12 @@ io.on('connection', async socket => {
         }
       })
     }
-    // 將名單發送disconnect-message事件給全部人
+    const messageData = {
+      senderId: socket.data.id,
+      receiveId: null,
+      content: '已離開'
+    }
+    await Message.create(messageData)
     io.emit('disconnect-message', socket.data.name, userList)
   })
 })

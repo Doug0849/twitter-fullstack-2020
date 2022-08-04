@@ -19,7 +19,7 @@
       <span class="position-absolute translate-middle badge rounded-pill bg-danger py-0 px-1" style="top: 30%; left:23%;">99+</span>
     </a>
     <a href="/users/{{currentUser.id}}/tweets">
-      <i class="{{#ifCond currentUser.id profileUser.id}}active-user{{else}}default-user{{/ifCond}}"></i>
+      <i class="{{#ifCond currentUser.id profileUser.id}}active-user{{else}}default-user{{/ifCond}}" data-userid="{{currentUser.id}}" id="chatroom"></i>
     </a>
     <a href="/users/setting">
       <i class="{{#ifCond route 'setting'}}active-setting{{else}}default-setting{{/ifCond}}"></i>
