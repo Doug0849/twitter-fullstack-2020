@@ -46,8 +46,8 @@ io.on('connection', async socket => {
   // --------------------------------------------------------
   // 伺服器收到 socket.on，參數事件名稱 'send-message' 時，
   // 將從客戶端發來的多個參數用一個函式處理。
-  socket.on('send-message', (someoneAvatar, message, time, socketId) => {
-    socket.broadcast.emit('receive-message', someoneAvatar, message, time, socketId)
+  socket.on('send-message', (someoneAvatar, message, time) => {
+    socket.broadcast.emit('receive-message', someoneAvatar, message, time)
   })
   // --------------------------------------------------------
   // 收到斷線訊息後的處理

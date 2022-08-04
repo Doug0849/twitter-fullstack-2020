@@ -35,7 +35,7 @@ chatForm.addEventListener('submit', e => {
 
   // socket.emit 為發送訊息給伺服器，第1個參數為事件名稱 send-message
   // 第2,3,4,5...參數可以是任何物件，接著看到伺服器端
-  socket.emit('send-message', someoneAvatar, message, time, socketId)
+  socket.emit('send-message', someoneAvatar, message, time)
   displayMessage('mySelf', message, time)
   inputMessage.value = ''
 })
@@ -45,10 +45,8 @@ socket.on('connecting', (selfName, connectUsers) => {
   updateconnectUsers(connectUsers)
 })
 
-socket.on('receive-message', (someoneAvatar, message, time, receiveSocketId) => {
-  if (socketId !== receiveSocketId) {
-    receiveMessage(someoneAvatar, message, time)
-  }
+socket.on('receive-message', (someoneAvatar, message, time) => {
+  receiveMessage(someoneAvatar, message, time)
 })
 
 // 一離開畫面就會送出斷線訊息
