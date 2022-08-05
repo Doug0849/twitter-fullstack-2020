@@ -5,14 +5,15 @@
     <a aria-current="page" href="/">
       <i class="{{#ifCond route 'tweets'}}active-index{{else}}default-index{{/ifCond}}"></i>
     </a>
-    <a href="/messages" class="position-relative">
-      <i class="{{#ifCond route 'messages'}}active-notice{{else}}default-notice{{/ifCond}}"></i>
-      <span class="position-absolute translate-middle p-1 bg-danger border border-light rounded-circle" style="top: 30%; left:21%;"></span>
+    <a href="/users/notifiaction" class="position-relative">
+      <i class="{{#ifCond route 'notifiaction'}}active-notice{{else}}default-notice{{/ifCond}}"></i>
+      <span class="position-absolute translate-middle bg-danger border border-light rounded-circle p-1" style="top: 30%; left:21%;"></span>
+      
     </a>
     <a href="/chatroom" class="position-relative">
-      <i class="{{#ifCond route 'chatroom'}}active-chatroom{{else}}default-chatroom{{/ifCond}}">
+      <i class="{{#ifCond route 'chatroom'}}active-chatroom{{else}}default-chatroom{{/ifCond}}"></i>
         <span class="position-absolute translate-middle badge rounded-pill bg-danger py-0 px-1" style="top: 30%; left:23%;">99+</span>
-      </i>
+      
     </a>
     <a href="/chatroom/private" class="position-relative">
       <i class="{{#ifCond route 'private'}}active-private{{else}}default-private{{/ifCond}}"></i>

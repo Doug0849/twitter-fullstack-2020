@@ -298,6 +298,8 @@ i.default-private:hover {
 }
 i.active-private {
     background-image: url('./svgs/active-private.svg');
+    width: calc(var(--base-size) * 11.125);
+    height: calc(var(--base-size) * 3.625);
 }
 i.default-notice {
     background-image: url('./svgs/default-notice.svg');
@@ -310,4 +312,6 @@ i.default-notice:hover{
 }
 i.active-notice {
     background-image: url('./svgs/active-notice.svg');
+    width: calc(var(--base-size) * 11.125);
+    height: calc(var(--base-size) * 3.625);
 }

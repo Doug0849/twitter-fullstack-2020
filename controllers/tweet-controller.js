@@ -1,4 +1,4 @@
-const { Tweet, User, Like, Reply } = require('../models')
+const { Tweet, User, Like, Reply, Notice } = require('../models')
 const helpers = require('../_helpers')
 const getTopUser = require('../helpers/top-user-helper')
 
@@ -28,30 +28,78 @@ const tweetController = {
     }
   },
   postTweetReply: async (req, res, next) => {
-    const UserId = helpers.getUser(req).id
-    const comment = req.body.comment
-    const TweetId = req.params.id
-    const existTweet = Tweet.findByPk(TweetId)
-    if (!existTweet) {
-      req.flash('error_messages', '這個推文已經不存在！')
-      res.redirect('/')
+    try {
+      const User = helpers.getUser(req)
+      const comment = req.body.comment
+      const TweetId = req.params.id
+      const existTweet = await Tweet.findByPk(TweetId, { raw: true })
+      if (!existTweet) {
+        req.flash('error_messages', '這個推文已經不存在！')
+        res.redirect('/')
+      }
+      if (!comment) {
+        req.flash('error_messages', '內容不可空白')
+        res.redirect('back')
+      }
+
+      const ids = User.Followers.filter(u => u.Followship.willNotice).map(
+        u => u.id
+      )
+      const reply = await Reply.create({ UserId: User.id, TweetId, comment })
+      const newReply = reply.toJSON()
+
+      existTweet.description =
+        existTweet.description.length > 80
+          ? `${existTweet.description.substring(0, 80)}...`
+          : existTweet.description
+      for await (const id of ids) {
+        await Notice.create({
+          title: `${User.name} 有新的回覆`,
+          receivedId: id,
+          objectType: `Tweet-${User.id}`,
+          objectId: newReply.TweetId,
+          description: existTweet.description,
+          authorAvatar: User.avatar,
+          isChecked: false
+        })
+      }
+      if (User.id !== existTweet.UserId) {
+        await Notice.create({
+          title: '你的貼文有新的回覆',
+          receivedId: existTweet.UserId,
+          objectType: null,
+          objectId: newReply.TweetId,
+          description: '',
+          authorAvatar: User.avatar,
+          isChecked: false
+        })
+      }
+      return res.redirect('back')
+    } catch (err) {
+      next(err)
     }
-    if (!comment) {
-      req.flash('error_messages', '內容不可空白')
-      res.redirect('back')
-    }
-    await Reply.create({ UserId, TweetId, comment })
-    return res.redirect('back')
   },
   likeTweet: async (req, res, next) => {
     try {
-      const UserId = helpers.getUser(req).id
+      const User = helpers.getUser(req)
       const TweetId = req.params.id
-      const existUser = User.findByPk(UserId)
+      const tweet = await Tweet.findByPk(TweetId, { raw: true })
+      const existUser = await User.findByPk(User.id)
       if (!existUser) throw new Error("This account didn't exist!")
-      const LikeTweet = await Like.findOne({ where: { UserId, TweetId } })
+      const LikeTweet = await Like.findOne({
+        where: { UserId: User.id, TweetId }
+      })
       if (LikeTweet) throw new Error('You already liked this tweet!')
-      await Like.create({ UserId, TweetId })
+      await Like.create({ UserId: User.id, TweetId })
+      await Notice.create({
+        title: `${User.name} 喜歡你的貼文`,
+        receivedId: tweet.UserId,
+        objectType: null,
+        objectId: TweetId,
+        description: '',
+        authorAvatar: User.avatar,
+        isChecked: false
+      })
       return res.redirect('back')
     } catch (err) {
       next(err)
@@ -71,8 +119,8 @@ const tweetController = {
   },
   postTweet: async (req, res, next) => {
     try {
-      const UserId = helpers.getUser(req).id
-      if (!UserId) {
+      const User = helpers.getUser(req)
+      if (!User) {
         return res.redirect(302, '/signin')
       }
       const description = req.body.description
@@ -80,7 +128,26 @@ const tweetController = {
       if (description.length > 140) {
         return res.redirect(302, 'back')
       }
-      await Tweet.create({ description, UserId })
+      const newTweet = await Tweet.create({ description, UserId: User.id })
+      const data = newTweet.toJSON()
+      data.description =
+        data.description.length > 80
+          ? `${data.description.substring(0, 80)}...`
+          : data.description
+      const ids = User.Followers.filter(u => u.Followship.willNotice).map(
+        u => u.id
+      )
+      for await (const id of ids) {
+        await Notice.create({
+          title: `${User.name} 有新的推文通知`,
+          receivedId: id,
+          objectType: `Tweet-${User.id}`,
+          objectId: data.id,
+          description: data.description,
+          authorAvatar: User.avatar,
+          isChecked: false
+        })
+      }
       return res.redirect('/tweets')
     } catch (err) {
       next(err)

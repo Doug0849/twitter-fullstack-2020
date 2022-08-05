@@ -11,5 +11,6 @@ router.get('/:id/tweets', userController.getUserTweets)
 router.get('/:id/replies', userController.getUserReplies)
 router.get('/:id/likes', userController.getUserLikes)
 router.get('/topUsers', userController.getTopUser)
+router.get('/notifiaction', userController.getNotifiaction)
 
 module.exports = router
