@@ -333,6 +333,8 @@ input.form-control:focus {
 #main-logs {
   max-height: calc(100vh - 105px);
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .text-message,

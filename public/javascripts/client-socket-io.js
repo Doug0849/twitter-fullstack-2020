@@ -1,20 +1,8 @@
-// client 端載入 socket.io
-// 需先在main.hbs掛載CDN socket.io才有辦法const socket = io()
-// socket伺服器架在localhost:3200
-const socket = io('http://localhost:3200')
-const socketId = socket.id
-let res
-let self
-// 當伺服器連上線時connect
+const chatroomMenu = document.querySelector('#chatroom')
+const userId = Number(chatroomMenu.dataset.userid)
+const socket = io('http://localhost:3200', { query: { userId } })
 socket.on('connect', async () => {
-  // 每次連線，先透過api取得自身資料
-  res = await axios.get('/chatroom/userinfo')
-  self = res.data.currentUser
-  // --------------------------------------------------------
-  // 等伺服器建立連線後
-  // 馬上發送第一個事件connecting到伺服器，參數夾帶自己的資料
-  socket.emit('connecting', self)
-  // 發送connecting事件
+  socket.emit('connecting')
 })
 
 // 選取聊天室介面元素
@@ -23,60 +11,48 @@ const mainLogs = document.querySelector('#main-logs')
 const inputMessage = document.querySelector('#input-message')
 const chatForm = document.querySelector('#chat-form')
 
-// 當form表單送出的時候
 chatForm.addEventListener('submit', e => {
   e.preventDefault()
   const message = inputMessage.value
-  const time = new Date().getHours() + ':' + new Date().getMinutes()
-  // const someone = self.name + `(${socket.id.slice(0, 5)})`
-  const someoneAvatar = self.avatar
+  const time = createTime()
 
   if (message === '') return
-
-  // socket.emit 為發送訊息給伺服器，第1個參數為事件名稱 send-message
-  // 第2,3,4,5...參數可以是任何物件，接著看到伺服器端
-  socket.emit('send-message', someoneAvatar, message, time, socketId)
-  displayMessage('mySelf', message, time)
+  socket.emit('send-message', message, time)
+  displayMessage(message, time)
   inputMessage.value = ''
 })
 
-socket.on('connecting', (selfName, connectUsers) => {
-  noticeOnline(selfName)
-  updateconnectUsers(connectUsers)
+socket.on('connecting', (someoneName, connectUsers, messages) => {
+  displayHistory(messages)
+  noticeOnline(someoneName)
+  updateConnectUsers(connectUsers)
 })
 
-socket.on(
-  'receive-message',
-  (someoneAvatar, message, time, receiveSocketId) => {
-    if (socketId !== receiveSocketId) {
-      receiveMessage(someoneAvatar, message, time)
-    }
-  }
-)
+socket.on('receive-message', (senderAvatar, message, time) => {
+  receiveMessage(senderAvatar, message, time)
+})
 
-// 一離開畫面就會送出斷線訊息
 socket.on('disconnect', self => {
   console.log(socket.connected)
 })
 
-// 從伺服器接到 disconnect-message事件後顯示disconnectMessage和更新名單
 socket.on('disconnect-message', (name, connectUsers) => {
   disconnectMessage(name)
-  updateconnectUsers(connectUsers)
+  updateConnectUsers(connectUsers)
 })
 
 // -------------------------------------------------
 // function
 function noticeOnline (userName) {
-  mainLogs.innerHTML += `
+  mainLogs.innerHTML = `
   <div class="row g-0 justify-content-center mb-2">
               <span
                 class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">${userName}上線了</span>
-            </div>`
+            </div>` + mainLogs.innerHTML
 }
 
-function displayMessage (someoneAvatar, message, time) {
-  mainLogs.innerHTML += `
+function displayMessage (message, time) {
+  mainLogs.innerHTML = `
   <div class="row g-0 align-items-end justify-content-end mb-2 me-2">
               <div class="col-7 row justify-content-end">
                 <p class="col-auto sended-msg bg-brand fs-6 py-2 px-3 mb-0 fw-light text-white"
@@ -86,11 +62,11 @@ function displayMessage (someoneAvatar, message, time) {
               </div>
                 <small class="col-12 msg-time text-black-50 fw-bold text-end" style="font-size: 0.5rem;">${time}</small>
             </div>
-  `
+  ` + mainLogs.innerHTML
 }
 
 function receiveMessage (someoneAvatar, message, time) {
-  mainLogs.innerHTML += `
+  mainLogs.innerHTML = `
   <div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
               <div class="col-1">
                 <img src="${someoneAvatar}" alt="" class="logs-avatar ms-2 rounded-circle"
@@ -104,10 +80,10 @@ function receiveMessage (someoneAvatar, message, time) {
               </div>
                 <small class="col-12 msg-time text-black-50 fw-bold text-start" style="font-size: 0.5rem; margin-left: 51px;">${time}</small>
             </div>
-  `
+  ` + mainLogs.innerHTML
 }
 
-function updateconnectUsers (onlineList) {
+function updateConnectUsers (onlineList) {
   connectUsers.innerHTML = ''
   onlineList.forEach(user => {
     connectUsers.innerHTML =
@@ -122,9 +98,66 @@ function updateconnectUsers (onlineList) {
 }
 
 function disconnectMessage (name) {
-  mainLogs.innerHTML += `
+  mainLogs.innerHTML = `
   <div class="row g-0 justify-content-center mb-2">
               <span
                 class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">${name}已離開</span>
-            </div>`
+            </div>` + mainLogs.innerHTML
+}
+
+function createTime() {
+  const date = new Date()
+  let hour = date.getHours()
+  let minutes = date.getMinutes()
+  let word = '上午'
+
+  if (hour >= 12) {
+    hour = hour - 12
+    word = '下午'
+  }
+
+  if (hour === 0) {
+    hour = 0
+  }
+
+  minutes = minutes < 10 ? '0' + minutes : minutes
+  return `${word} ${hour}:${minutes}`
+}
+
+function displayHistory(messages) {
+  messages.forEach(msg => {
+    if (msg.content.includes('上線了')) {
+      return noticeOnline(msg.Sender.name)
+    }
+    if (msg.content.includes('已離開')) {
+      return disconnectMessage(msg.Sender.name)
+    }
+    if (msg.senderId === userId) {
+      const time = formatTime(msg.createdAt)
+      return displayMessage(msg.content, time)
+    }
+    if (msg.senderId !== userId) {
+      const time = formatTime(msg.createdAt)
+      return receiveMessage(msg.Sender.avatar, msg.content, time)
+    }
+  })
+}
+
+function formatTime(time) {
+  let word = ''
+  const timeArray = time.slice(11, 16).split(':')
+  let hour = Number(timeArray[0]) + 8
+  if (hour > 24) {
+    hour -= 24
+    word = '上午'
+  }
+  if (hour > 12) {
+    hour -= 12
+    word = '下午'
+  }
+  if (hour < 12) {
+    hour = '0' + hour.toString()
+    word = '上午'
+  }
+  return word + ' ' + hour + ':' + timeArray[1]
 }
