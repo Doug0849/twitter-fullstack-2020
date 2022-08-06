@@ -8,14 +8,15 @@ socket.on('connect', async () => {
 let room
 let receiverId
 const mainLogs = document.querySelector('#main-logs')
+const pvMsgNotice = document.querySelector('#private-notice') || ''
+const chatroomNotice = document.querySelector('#chatroom-notice') || ''
 if (mainLogs) {
   const chatForm = document.querySelector('#chat-form') || ''
-  const userList = document.querySelector('#users-list')
-  const inputMessage = document.querySelector('#input-message')
-  const sendButton = document.querySelector('#send-message')
-  const logsTitleName = document.querySelector('#logs-title-name')
-  const logsTitleAccount = document.querySelector('#logs-title-account')
-
+  const userList = document.querySelector('#users-list') || ''
+  const inputMessage = document.querySelector('#input-message') || ''
+  const sendButton = document.querySelector('#send-message') || ''
+  const logsTitleName = document.querySelector('#logs-title-name') || ''
+  const logsTitleAccount = document.querySelector('#logs-title-account') || ''
   socket.on('user-list', userList => {
     shoAllUser(userList)
   })
@@ -158,3 +159,11 @@ if (mainLogs) {
     return word + ' ' + hour + ':' + timeArray[1]
   }
 }
+
+socket.on('private-notice', () => {
+  pvMsgNotice.removeAttribute('hidden')
+})
+
+socket.on('chatroom-notice', () => {
+  chatroomNotice.removeAttribute('hidden')
+})

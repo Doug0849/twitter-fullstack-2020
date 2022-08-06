@@ -66,6 +66,7 @@ io.on('connect', async socket => {
       content: message
     }
     await Message.create(messageData)
+    io.emit('chatroom-notice')
     return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
   })
 
@@ -93,6 +94,9 @@ io.on('connect', async socket => {
   // 以上為聊天室
   // 以下為連上私人時的事件
   socket.on('connecting-private', async () => {
+    console.log(socket.id)
+    const sockets = await io.fetchSockets()
+    console.log(sockets)
     const user = await User.findByPk(userId,
       { attributes: ['id', 'name', 'account', 'avatar'] }
     )
@@ -147,6 +151,7 @@ io.on('connect', async socket => {
       avatar: socket.data.avatar
     }
     // 對指定房間發送訊息
+    io.to(room).emit('private-notice')
     return io.to(room).emit('receive-pv-msg', senderData, message, time)
   })
 })
