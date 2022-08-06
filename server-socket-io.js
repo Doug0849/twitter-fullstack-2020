@@ -17,7 +17,6 @@ io.on('connect', async socket => {
     const sockets = await io.fetchSockets()
     if (sockets.some(socket =>
       socket.data.id === userId &&
-      socket.data.room === 'public'
     )) {
       return socket.disconnect()
     }
@@ -40,6 +39,7 @@ io.on('connect', async socket => {
       socket.data.name = user.name
       socket.data.account = user.account
       socket.data.avatar = user.avatar
+      socket.join(socket.data.account)
       if (sockets) {
         sockets.forEach((socket, i) => {
           userList[i] = {
@@ -56,7 +56,8 @@ io.on('connect', async socket => {
       //   content: '上線了'
       // }
       // await Message.create(messageData)
-      return io.emit('connecting', socket.data.name, userList, messages)
+      io.emit('online', socket.data.name, userList)
+      return io.to(socket.data.account).emit('connecting', messages)
     }
   })
 
@@ -108,13 +109,12 @@ io.on('connect', async socket => {
     socket.data.name = user.name
     socket.data.account = user.account
     socket.data.avatar = user.avatar
-    socket.data.room = user.account
     socket.join(socket.data.account) // 連上私人頻道時，就將自己加入跟自己帳號一樣的房間
 
     const userList = users.map(user => ({ ...user.toJSON() }))
 
     // 只對自己發送，更新私聊清單事件，不對自己發送的話，其他連線到私人頻道的都會被影響
-    return io.to(socket.data.room).emit('user-list', userList)
+    return io.to(socket.data.account).emit('user-list', userList)
   })
 
   // 取得歷史訊息事件

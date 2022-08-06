@@ -23,8 +23,11 @@ if (mainLogs) {
     inputMessage.value = ''
   })
 
-  socket.on('connecting', (someoneName, connectUsers, messages) => {
+  socket.on('connecting', messages => {
     displayHistory(messages)
+  })
+
+  socket.on('online', (someoneName, connectUsers) => {
     noticeOnline(someoneName)
     updateConnectUsers(connectUsers)
   })
