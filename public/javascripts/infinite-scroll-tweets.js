@@ -28,6 +28,7 @@ async function lazyLoading () {
     const newObserveTarget = document.getElementById('tweets-end')
     observer.observe(newObserveTarget)
     activeLikeBtn()
+    activeReplyBtn()
     page++
   } catch (error) {
     console.error(error)
@@ -224,4 +225,57 @@ function activeLikeBtn () {
       }
     })
   })
+}
+
+function activeReplyBtn () {
+  const replyForm = document.querySelectorAll('.reply-form') || ''
+  const replyTextArea = document.querySelectorAll('.reply-description-input') || ''
+  const replyDescriptionLength = document.querySelectorAll('.reply-description-length') || ''
+  const replyTweetBtn = document.querySelectorAll('.reply-btn-send') || ''
+
+  if (replyForm) {
+    replyForm.forEach((form, i) => {
+      replyForm[i].addEventListener('keyup', e => {
+        if (replyTextArea[i].value.length === 0) {
+          replyTweetBtn[i].setAttribute('disabled', '')
+          replyDescriptionLength[i].classList.remove('text-black-50')
+          replyDescriptionLength[i].classList.add('text-error')
+          replyDescriptionLength[i].textContent = '內容不可空白'
+        }
+        if (replyTextArea[i].value.length > 0) {
+          replyTweetBtn[i].removeAttribute('disabled')
+          replyDescriptionLength[i].classList.add('text-black-50')
+          replyDescriptionLength[i].classList.remove('text-error')
+          replyDescriptionLength[i].textContent = replyTextArea[i].value.length + '/140'
+        }
+        if (replyTextArea[i].value.length > 140) {
+          replyTweetBtn[i].setAttribute('disabled', '')
+          replyDescriptionLength[i].classList.remove('text-black-50')
+          replyDescriptionLength[i].classList.add('text-error')
+          replyDescriptionLength[i].textContent = '字數不可超過140字 , ' + replyTextArea[i].value.length + '/140'
+        }
+      })
+    })
+
+    replyForm.forEach((form, i) => {
+      replyForm[i].addEventListener('click', async e => {
+        if (e.target.classList.contains('reply-btn-send')) {
+          e.preventDefault()
+          e.stopPropagation()
+          const userId = e.target.dataset.userid
+          const tweetId = e.target.dataset.tweetid
+          const comment = document.querySelector(`#comment-${tweetId}`)
+          await axios.post(`/tweets/${tweetId}/replies`, {
+            UserId: userId,
+            TweetId: tweetId,
+            comment: comment.value
+          })
+          comment.value = ''
+          const count = document.querySelector(`#reply-count-${tweetId}`)
+          const amount = Number(count.textContent) + 1
+          count.textContent = amount
+        }
+      })
+    })
+  }
 }
