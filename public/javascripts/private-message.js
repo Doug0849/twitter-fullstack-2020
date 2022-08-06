@@ -164,6 +164,3 @@ socket.on('private-notice', () => {
   pvMsgNotice.removeAttribute('hidden')
 })
 
-socket.on('chatroom-notice', () => {
-  chatroomNotice.removeAttribute('hidden')
-})

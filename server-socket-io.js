@@ -129,7 +129,7 @@ io.on('connect', async socket => {
     })
     // 要再補一個撈出來的訊息當中，如果receiver是自己的，就要在have_read改為true
     // 只對自己發送取得歷史訊息的事件
-    return io.to(socket.data.room).emit('get-pv-history', messages)
+    return io.to(socket.data.account).emit('get-pv-history', messages)
   })
   // 寄出私人訊息事件
   socket.on('send-pv-msg', async (message, time, room, receiverId) => {
