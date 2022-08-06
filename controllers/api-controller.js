@@ -8,7 +8,7 @@ const {
 const fileHelper =
   process.env.NODE_ENV === 'production' ? imgurFileHandler : localFileHandler
 
-const { User, Followship, Reply, Tweet, Like } = require('../models')
+const { User, Followship, Reply, Tweet, Like, Notice } = require('../models')
 
 const apiController = {
   getUserInfo: async (req, res, next) => {
@@ -61,16 +61,16 @@ const apiController = {
   },
   putFollow: async (req, res, next) => {
     try {
-      const UserId = Number(helpers.getUser(req).id)
+      const currentUser = helpers.getUser(req)
       const followingId = Number(req.body.id)
-      if (UserId === followingId) {
+      if (Number(currentUser.id) === followingId) {
         return res.status(200).json({
           status: 'error',
           message: "You can't follow yourself"
         })
       }
 
-      const user = await User.findByPk(followingId)
+      const user = await User.findByPk(followingId, { raw: true })
       if (!user) throw new Error("User didn't exist")
       if (user.role === 'admin') {
         return res.status(200).json({
@@ -80,10 +80,18 @@ const apiController = {
       }
 
       const isFollowed = await Followship.findOne({
-        where: { followerId: UserId, followingId }
+        where: { followerId: currentUser.id, followingId }
       })
-
+      const data = isFollowed ? isFollowed.toJSON() : ''
       if (isFollowed) {
+        if (data.willNotice) {
+          await Notice.destroy({
+            where: {
+              receivedId: currentUser.id,
+              objectType: `Tweet-${followingId}`
+            }
+          })
+        }
         const destroyedFollowship = await isFollowed.destroy()
         return res.status(200).json({
           status: 'success',
@@ -93,8 +101,17 @@ const apiController = {
       }
 
       const newFollowship = await Followship.create({
-        followerId: UserId,
+        followerId: currentUser.id,
         followingId
+      })
+      await Notice.create({
+        title: `${currentUser.name} 開始追蹤你`,
+        receivedId: followingId,
+        objectType: 'Followship',
+        objectId: '',
+        description: '',
+        authorAvatar: currentUser.avatar,
+        isChecked: false
       })
       return res.status(200).json({
         status: 'success',
@@ -102,6 +119,7 @@ const apiController = {
         followship: newFollowship
       })
     } catch (err) {
+      console.log(err)
       next(err)
     }
   },
@@ -124,6 +142,24 @@ const apiController = {
       })
     }
     const data = await Reply.create({ UserId: User.id, TweetId, comment })
+    const ids = User.Followers.filter(u => u.Followship.willNotice).map(
+      u => u.id
+    )
+    existTweet.description =
+      existTweet.description.length > 80
+        ? `${existTweet.description.substring(0, 80)}...`
+        : existTweet.description
+    for await (const id of ids) {
+      await Notice.create({
+        title: `${User.name} 有新的回覆`,
+        receivedId: id,
+        objectType: `Tweet-${User.id}`,
+        objectId: TweetId,
+        description: existTweet.description,
+        authorAvatar: User.avatar,
+        isChecked: false
+      })
+    }
     return res.status(200).json({
       status: 'success',
       data: {
@@ -135,6 +171,32 @@ const apiController = {
         avatar: User.avatar
       }
     })
+  },
+  patchWillNotice: async (req, res, next) => {
+    try {
+      const User = helpers.getUser(req)
+      const targetId = req.body.id
+      const followship = await Followship.findOne({
+        where: { followerId: User.id, followingId: targetId }
+      })
+      const data = followship.toJSON()
+      const updateFollowship = await followship.update({
+        willNotice: !followship.willNotice
+      })
+
+      if (data.willNotice) {
+        Notice.destroy({
+          where: { receivedId: User.id, objectType: `Tweet-${targetId}` }
+        })
+      }
+      res.status(200).json({
+        status: 'success',
+        message: 'successfully patch notice',
+        updateFollowship
+      })
+    } catch (err) {
+      next(err)
+    }
   },
   getTweets: async (req, res, next) => {
     try {

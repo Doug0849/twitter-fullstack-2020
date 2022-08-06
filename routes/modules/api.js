@@ -15,6 +15,7 @@ router.post(
   ]),
   apiController.postUserInfo
 )
+router.post('/followships/notice', apiController.patchWillNotice)
 router.post('/followships', apiController.putFollow)
 router.post('/tweet/:id/replies', apiController.postTweetReply)
 

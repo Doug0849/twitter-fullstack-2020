@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt-nodejs')
 const helpers = require('../_helpers')
 const getTopUser = require('../helpers/top-user-helper')
 
-const { User, Tweet, Like, Reply, Followship } = require('../models')
+const { User, Tweet, Like, Reply, Followship, Notice } = require('../models')
 
 const userController = {
   signUpPage: async (req, res, next) => {
@@ -39,11 +39,11 @@ const userController = {
       }
       const existEmail = await User.findOne({ where: { email } })
       if (existEmail) {
-        const error_messages = ('Email already exists!')
+        const error_messages = 'Email already exists!'
         return res.render('signup', { account, name, error_messages })
       }
       if (name.length > 50) {
-        const error_messages = ("Name can't have too many characters.")
+        const error_messages = "Name can't have too many characters."
         return res.render('signup', { account, email, error_messages })
       }
 
@@ -193,6 +193,13 @@ const userController = {
       profileUser = profileUser.toJSON()
       if (currentUser.Followings.some(fr => fr.id === profileUser.id)) {
         profileUser.isFollowed = true
+      }
+      if (
+        currentUser.Followings.some(
+          fr => fr.id === profileUser.id && fr.Followship.willNotice
+        )
+      ) {
+        profileUser.willNotice = true
       }
       const likedTweetsId = profileUser?.Likes
         ? currentUser.Likes.map(lt => lt.TweetId)
@@ -444,6 +451,21 @@ const userController = {
     } catch (err) {
       next(err)
     }
+  },
+  getNotifiaction: async (req, res, next) => {
+    const currentUser = helpers.getUser(req)
+    const topUser = await getTopUser(currentUser)
+    const notices = await Notice.findAll({
+      where: { receivedId: currentUser.id },
+      order: [['createdAt', 'desc']],
+      raw: true
+    })
+    res.render('notice/notice', {
+      notices,
+      role: currentUser.role,
+      currentUser,
+      topUser
+    })
   }
 }
 

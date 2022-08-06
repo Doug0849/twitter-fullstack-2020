@@ -6,6 +6,7 @@
   "scripts": {
     "start": "set NODE_ENV=development&& node app.js",
     "dev": "set NODE_ENV=development&& nodemon app.js",
+    "dev2": "set NODE_ENV=development&& nodemon server-socket-io.js",
     "test": "mocha test --exit --recursive --timeout 5000",
     "lint": "eslint \"**/*.js\" --fix"
   },
@@ -35,7 +36,8 @@
     "sequelize": "^6.18.0",
     "sequelize-cli": "^5.5.0",
     "sinon": "^10.0.0",
-    "sinon-chai": "^3.3.0"
+    "sinon-chai": "^3.3.0",
+    "socket.io": "^4.5.1"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
@@ -47,5 +49,9 @@
     "sequelize-test-helpers": "^1.4.2",
     "supertest": "^3.3.0",
     "webpack-cli": "^4.10.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
   }
 }

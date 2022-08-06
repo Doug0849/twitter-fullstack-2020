@@ -17,6 +17,8 @@ dataPanel.addEventListener('click', e => {
     repliesController.postTweetReply(e.target.dataset.tid)
   } else if (e.target.matches('.follow-item')) {
     followshipController.patchFollowship(e.target)
+  } else if (e.target.matches('#noti-icon')) {
+    followshipController.patchWillNotice(e.target)
   }
 })
 
@@ -95,6 +97,8 @@ const tools = {
     div.innerHTML = ''
   }
 }
+
+tools.closeAlert()
 
 const repliesController = {
   showReplyModel: tid => {
@@ -345,64 +349,104 @@ const infoFormController = {
 
 const followshipController = {
   patchFollowship: async target => {
-    const userId = target.dataset.userid
-    const followerCount =
-      document.querySelector(`#count-followers-${userId}`) || ''
-    const followingCount = document.querySelector('#count-followings') || ''
-    const allFollowBtn = document.querySelectorAll(`.follow-id-${userId}`)
-    const isCurrentUser = document.querySelector('#show-info-modal') || ''
-    // eslint-disable-next-line no-undef
-    const res = await axios.post('/api/followships', { id: userId })
-    if (res.data.status === 'error') {
-      return tools.showErrorMessage(res.data.message)
+    try {
+      const userId = target.dataset.userid
+      const followerCount =
+        document.querySelector(`#count-followers-${userId}`) || ''
+      const followingCount = document.querySelector('#count-followings') || ''
+      const allFollowBtn = document.querySelectorAll(`.follow-id-${userId}`)
+      const isCurrentUser = document.querySelector('#show-info-modal') || ''
+      const buttons = document.querySelector('.buttons')
+      const followBtn = document.querySelector('#follow')
+      const noticeBtn = document.querySelector('#notice-btn') || ''
+      // eslint-disable-next-line no-undef
+      const res = await axios.post('/api/followships', { id: userId })
+      if (res.data.status === 'error') {
+        return tools.showErrorMessage(res.data.message)
+      }
+      if (res.data.message === 'followship created') {
+        allFollowBtn.forEach(btn => {
+          btn.classList.toggle('following-btn')
+          btn.classList.toggle('follow-btn')
+          btn.textContent = '正在跟隨'
+        })
+        if (followerCount) {
+          followerCount.textContent = `${Number(
+            followerCount.dataset.followerAmount
+          ) + 1} 個`
+          followerCount.dataset.followerAmount = `${Number(
+            followerCount.dataset.followerAmount
+          ) + 1}`
+          const button = document.createElement('button')
+          button.classList.add(
+            'border',
+            'border-brand',
+            'rounded-circle',
+            'bg-transparent',
+            'me-3',
+            'mt-3',
+            'p-2'
+          )
+          button.id = 'notice-btn'
+          button.dataset.userid = userId
+          button.innerHTML = `<img src="/stylesheets/svgs/outline-noti.svg" alt="deactivate-noti" id="noti-icon" data-userid="${userId}" style="filter: var(--base-filter);"/>`
+          buttons.insertBefore(button, followBtn)
+        }
+        if (isCurrentUser) {
+          followingCount.textContent = `${Number(
+            followingCount.dataset.followingAmount
+          ) + 1} 個`
+          followingCount.dataset.followingAmount = `${Number(
+            followingCount.dataset.followingAmount
+          ) + 1}`
+        }
+      }
+      if (res.data.message === 'followship destroyed') {
+        allFollowBtn.forEach(btn => {
+          btn.classList.toggle('following-btn')
+          btn.classList.toggle('follow-btn')
+          btn.textContent = '跟隨'
+        })
+        if (followerCount) {
+          followerCount.textContent = `${Number(
+            followerCount.dataset.followerAmount
+          ) - 1} 個`
+          followerCount.dataset.followerAmount = `${Number(
+            followerCount.dataset.followerAmount
+          ) - 1}`
+          noticeBtn.remove()
+        }
+        if (isCurrentUser) {
+          followingCount.textContent = `${Number(
+            followingCount.dataset.followingAmount
+          ) - 1} 個`
+          followingCount.dataset.followingAmount = `${Number(
+            followingCount.dataset.followingAmount
+          ) - 1}`
+        }
+      }
+    } catch (err) {
+      console.log(err)
     }
-    if (res.data.message === 'followship created') {
-      allFollowBtn.forEach(btn => {
-        btn.classList.toggle('following-btn')
-        btn.classList.toggle('follow-btn')
-        btn.textContent = '正在跟隨'
-      })
-      if (followerCount) {
-        followerCount.textContent = `${Number(
-          followerCount.dataset.followerAmount
-        ) + 1} 個`
-        followerCount.dataset.followerAmount = `${Number(
-          followerCount.dataset.followerAmount
-        ) + 1}`
+  },
+  patchWillNotice: async target => {
+    try {
+      const targetId = target.dataset.userid
+      // eslint-disable-next-line no-undef
+      const res = await axios.post('/api/followships/notice', { id: targetId })
+      if (res.data.status === 'error') {
+        return tools.showErrorMessage(res.data.message)
       }
-      if (isCurrentUser) {
-        followingCount.textContent = `${Number(
-          followingCount.dataset.followingAmount
-        ) + 1} 個`
-        followingCount.dataset.followingAmount = `${Number(
-          followingCount.dataset.followingAmount
-        ) + 1}`
-      }
-    }
-    if (res.data.message === 'followship destroyed') {
-      allFollowBtn.forEach(btn => {
-        btn.classList.toggle('following-btn')
-        btn.classList.toggle('follow-btn')
-        btn.textContent = '跟隨'
-      })
-      if (followerCount) {
-        followerCount.textContent = `${Number(
-          followerCount.dataset.followerAmount
-        ) - 1} 個`
-        followerCount.dataset.followerAmount = `${Number(
-          followerCount.dataset.followerAmount
-        ) - 1}`
-      }
-      if (isCurrentUser) {
-        followingCount.textContent = `${Number(
-          followingCount.dataset.followingAmount
-        ) - 1} 個`
-        followingCount.dataset.followingAmount = `${Number(
-          followingCount.dataset.followingAmount
-        ) - 1}`
-      }
+      console.log(res)
+      const notiIcon = document.querySelector('#noti-icon')
+      notiIcon.src =
+        notiIcon.alt === 'active-noti'
+          ? '/stylesheets/svgs/outline-noti.svg'
+          : '/stylesheets/svgs/noti.svg'
+      notiIcon.alt =
+        notiIcon.alt === 'active-noti' ? 'deactivate-noti' : 'active-noti'
+    } catch (err) {
+      console.log(err)
     }
   }
 }
-
-tools.closeAlert()

@@ -1,0 +1,72 @@
+<div class="row justify-content-center h-100 w-100">
+  <div class="col-2">
+    {{>side-menu route='chatroom'}}
+  </div>
+  {{!-- connect-list --}}
+  <div class="col-6 row border p-0" id="chat-room">
+    <div class="col-4 border-end p-0">
+      <h5 class="fw-bold border-bottom mb-0 p-3">線上使用者<span id="connection-count" class="fw-bold">(1)</span></h5>
+      {{!-- 每個使用者開始 --}}
+      <div class="connect-user" id="connect-users">
+        <div class="user-wrapper border-bottom my-3 ms-3">
+          <img src="/pic/default_avatar.png" alt="" class="avatar-sm rounded-circle" id="chatroom-avatar-{{this.id}}">
+          <strong>Apple</strong>
+          <span>@apple</span>
+        </div>
+      </div>
+      {{!-- 每個使用者結束 --}}
+    </div>
+    <div class="col-8 p-0">
+      <h5 class="fw-bold border-bottom mb-0 p-3">公開聊天室</h5>
+      <div class="row align-items-end w-100 m-0" style="height: calc(100% - 50px);">
+        <div class="col-12 p-0">
+          <div id="main-logs" class="scrollbar">
+            {{!-- 這是系統訊息 --}}
+            {{!-- <div class="row g-0 justify-content-center mb-2">
+              <span
+                class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">這裡是系統訊息</span>
+            </div> --}}
+            {{!-- 這是系統訊息 --}}
+            {{!-- 這是收到的訊息 --}}
+            {{!-- <div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
+              <div class="col-1 me-2">
+                <img src="/pic/default_avatar.png" alt="" class="logs-avatar ms-2 rounded-circle"
+                  style="object-fit: cover; height: 40px; weight:40px;">
+              </div>
+              <div class="col-11 row justify-content-start">
+                <p class="col-auto received-msg bg-secondary bg-opacity-25 fs-6 py-2 px-3 mb-0 fw-light"
+                  style="border-radius: 1rem 1rem 1rem 0; max-weight:50%; margin-left: 20px;">
+                  基本功能的目的是驗收你對
+                </p>
+              </div>
+              <small class="col-12 msg-time text-black-50 fw-bold text-start"
+                style="font-size: 0.5rem; margin-left: 53px;">下午 4:21</small>
+            </div> --}}
+            {{!-- 這是收到的訊息 --}}
+            {{!-- 這是發送的訊息 --}}
+            {{!-- <div class="row g-0 align-items-end justify-content-end mb-2 me-2">
+              <div class="col-7 row justify-content-end">
+                <p class="col-auto sended-msg bg-brand fs-6 py-2 px-3 mb-0 fw-light text-white"
+                  style="border-radius: 1rem 1rem 0 1rem;">
+                  基本功能的目的是驗收
+                </p>
+              </div>
+              <small class="col-12 msg-time text-black-50 fw-bold text-end" style="font-size: 0.5rem;">下午 4:21</small>
+            </div> --}}
+            {{!-- 這是發送的訊息 --}}
+          </div>
+          {{!-- 發送訊息區塊 --}}
+          <form id="chat-form"
+            class="col-12 row align-items-center justify-content-center mw-100 m-0 px-0 py-2 border-top">
+            <label for="input-message" class="visually-hidden">input message</label>
+            <input id="input-message" type="text"
+              class="col-11 rounded-pill border-0 bg-secondary bg-opacity-10 py-1 px-3" placeholder="輸入訊息...">
+            <button type="submit" id="send-message" class="btn border-0 mb-0 col-auto p-0 ms-2"><img
+                src="/stylesheets/svgs/send.svg" alt="" style="height: 30px; weight:30px;"></a>
+          </form>
+          {{!-- 發送訊息區塊 --}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

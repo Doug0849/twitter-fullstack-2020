@@ -15,7 +15,6 @@ const handlebarsHelpers = require('./helpers/handlerbars-helpers')
 const routes = require('./routes')
 
 const app = express()
-const port = process.env.PORT || 3000
 const SESSION_SECRET = 'simpleTwitter'
 
 app.engine('hbs', handlebars({ extname: '.hbs', helpers: handlebarsHelpers }))
@@ -43,7 +42,4 @@ app.use((req, res, next) => {
 
 app.use(routes)
 
-app.listen(port, () => {
-  console.info(`Example app listening on http://localhost:${port}`)
-})
 module.exports = app

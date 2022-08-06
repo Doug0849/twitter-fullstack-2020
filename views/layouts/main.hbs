@@ -17,7 +17,7 @@
 
 <body>
   <div class="vh-100" id="data-panel">
-    <div id="messages-area" data-bs-dismiss="alert" data-bs-target="#my-alert" aria-label="Close">{{> messages}}</div>
+    <div id="messages-area" data-bs-dismiss="alert" data-bs-target="#my-alert" aria-label="Close" style="height: 0%; width: 0%;">{{> messages}}</div>
     {{{body}}}
   </div>
 </body>
@@ -29,5 +29,11 @@
 <script src="/javascripts/script.js"></script>
 <script src="/javascripts/like-btn-listener.js"></script>
 <script src="/javascripts/verify-content-length.js"></script>
-
+{{!-- 當路由進到聊天室，渲染聊天頁面，同時從後段帶入變數，來載入socket.io --}}
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"
+  integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+{{#if chatRoom}}
+<script src="/javascripts/chatroom-socket-io.js"></script>
+{{/if}}
+<script src="/javascripts/private-message.js"></script>
 </html>

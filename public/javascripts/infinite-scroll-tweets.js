@@ -20,7 +20,9 @@ async function lazyLoading () {
     const user = response.data.currentUser
     const tweets = response.data.tweets
     if (!tweets.length) {
-      return endHTML()
+      endHTML()
+      activeLikeBtn()
+      activeReplyBtn()
     }
     await tweets.forEach(tweet => {
       injectHTMl(getTemplate(tweet, user))
