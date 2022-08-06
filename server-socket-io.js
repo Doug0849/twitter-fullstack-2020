@@ -1,10 +1,12 @@
+const app = require('./app')
+const { createServer } = require('http')
 const { Server } = require('socket.io')
-const { User, Message } = require('../models/')
+const httpServer = createServer(app)
+const port = process.env.PORT || 3000
+const io = new Server(httpServer, { /* options */ })
+
+const { User, Message } = require('./models')
 const { Op } = require('sequelize')
-// const app = require('../app')
-const io = new Server(3200, {
-  cors: { origin: ['http://localhost:3000'] }
-})
 
 io.on('connect', async socket => {
   const userId = socket.handshake.query.userId
@@ -94,9 +96,6 @@ io.on('connect', async socket => {
   // 以上為聊天室
   // 以下為連上私人時的事件
   socket.on('connecting-private', async () => {
-    console.log(socket.id)
-    const sockets = await io.fetchSockets()
-    console.log(sockets)
     const user = await User.findByPk(userId,
       { attributes: ['id', 'name', 'account', 'avatar'] }
     )
@@ -156,4 +155,6 @@ io.on('connect', async socket => {
   })
 })
 
-module.exports = io
+httpServer.listen(port, () => {
+  console.info(`Example app listening on http://localhost:${port}`)
+})

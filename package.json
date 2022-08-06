@@ -6,6 +6,7 @@
   "scripts": {
     "start": "set NODE_ENV=development&& node app.js",
     "dev": "set NODE_ENV=development&& nodemon app.js",
+    "dev2": "set NODE_ENV=development&& nodemon server-socket-io.js",
     "test": "mocha test --exit --recursive --timeout 5000",
     "lint": "eslint \"**/*.js\" --fix"
   },
