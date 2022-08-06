@@ -1,4 +1,6 @@
 const helpers = require('../_helpers')
+const { getOffset } = require('../helpers/pagination-helper')
+const getTopUser = require('../helpers/top-user-helper')
 const {
   localFileHandler,
   imgurFileHandler
@@ -6,7 +8,7 @@ const {
 const fileHelper =
   process.env.NODE_ENV === 'production' ? imgurFileHandler : localFileHandler
 
-const { User, Followship, Reply, Tweet, Notice } = require('../models')
+const { User, Followship, Reply, Tweet, Like, Notice } = require('../models')
 
 const apiController = {
   getUserInfo: async (req, res, next) => {
@@ -31,23 +33,17 @@ const apiController = {
     try {
       const currentUser = helpers.getUser(req)
       if (currentUser.id !== Number(req.params.id)) {
-        return res
-          .status(200)
-          .json({ status: 'error', message: '你只能編輯你自己的檔案' })
+        return res.status(200).json({ status: 'error', message: '你只能編輯你自己的檔案' })
       }
       const editUser = await User.findByPk(Number(req.params.id))
       const { name, introduction } = req.body
       if (!name) {
-        return res
-          .status(200)
-          .json({ status: 'error', message: '名稱不能為空白' })
+        return res.status(200).json({ status: 'error', message: '名稱不能為空白' })
       }
       let avatar
       let coverPhoto
       if (req.files) {
-        req.files.avatar
-          ? (avatar = await fileHelper(req.files.avatar[0]))
-          : (avatar = currentUser.avatar)
+        req.files.avatar ? (avatar = await fileHelper(req.files.avatar[0])) : (avatar = currentUser.avatar)
         req.files.coverPhoto
           ? (coverPhoto = await fileHelper(req.files.coverPhoto[0]))
           : (coverPhoto = currentUser.coverPhoto)
@@ -127,6 +123,7 @@ const apiController = {
       next(err)
     }
   },
+
   postTweetReply: async (req, res, next) => {
     const User = helpers.getUser(req)
     const comment = req.body.comment
@@ -196,6 +193,42 @@ const apiController = {
         status: 'success',
         message: 'successfully patch notice',
         updateFollowship
+      })
+    } catch (err) {
+      next(err)
+    }
+  },
+  getTweets: async (req, res, next) => {
+    try {
+      const limit = 10
+      const page = Number(req.params.page)
+      console.log(page)
+      const offset = getOffset(limit, page)
+      const currentUser = helpers.getUser(req)
+      const followingsId = currentUser.Followings.map(user => user.id)
+      const topUser = await getTopUser(currentUser)
+      const tweets = await Tweet.findAll({
+        where: { UserId: [...followingsId, currentUser.id] },
+        order: [['createdAt', 'DESC']],
+        attributes: ['id', 'description', 'createdAt'],
+        include: [
+          { model: User, attributes: ['id', 'name', 'account', 'avatar'] },
+          { model: Reply, attributes: ['id'] },
+          { model: Like, attributes: ['id'] }
+        ],
+        limit,
+        offset
+      })
+      const likedTweetsId = req.user?.Likes ? currentUser.Likes.map(lt => lt.TweetId) : []
+      const data = tweets.map(tweets => ({
+        ...tweets.toJSON(),
+        isLiked: likedTweetsId.includes(tweets.id)
+      }))
+      res.json({
+        tweets: data,
+        role: currentUser.role,
+        currentUser,
+        topUser
       })
     } catch (err) {
       next(err)

@@ -1,5 +1,4 @@
 const helpers = require('../_helpers')
-const { User } = require('../models')
 
 const socketIoController = {
   getChatroom: (req, res, next) => {
