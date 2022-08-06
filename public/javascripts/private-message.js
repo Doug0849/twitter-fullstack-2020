@@ -1,6 +1,6 @@
 const chatroomMenu = document.querySelector('#chatroom')
 const userId = Number(chatroomMenu.dataset.userid)
-const socket = io({ query: { userId } }) // io('http://localhost:3200', { query: { userId } })
+const socket = io({ query: { userId } })
 socket.on('connect', async () => {
   socket.emit('connecting-private')
 })
