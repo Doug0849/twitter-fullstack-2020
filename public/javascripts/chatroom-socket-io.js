@@ -1,6 +1,6 @@
 const chatroomMenu = document.querySelector('#chatroom')
 const userId = Number(chatroomMenu.dataset.userid)
-const socket = io('http://localhost:3200', { query: { userId } })
+const socket = io({ query: { userId } })
 
 // 聊天室選取聊天室介面元素
 const mainLogs = document.querySelector('#main-logs')

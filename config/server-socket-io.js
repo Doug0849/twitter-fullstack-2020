@@ -1,8 +1,8 @@
-const { Server } = require('socket.io')
+const socketIO = require('socket.io')
 const { User, Message } = require('../models/')
 const { Op } = require('sequelize')
 const app = require('../app')
-const io = new Server(app)
+const io = socketIO(app)
 
 io.on('connect', async socket => {
   const userId = socket.handshake.query.userId
