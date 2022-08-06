@@ -76,7 +76,7 @@
         {{> reply-modal tweet=this user=../currentUser}}
         {{/each}}
         {{!-- 每個人都有第一個管理員的推 --}}
-        <div class="tweet-cards border-bottom border-1 mb-2">
+        <div id="first-tweet" class="tweet-cards border-bottom border-1 mb-2">
           <div class="d-flex flex-nowrap ms-3 mt-3">
             <div class="avatar-container me-1">
               <a href="#">
@@ -115,7 +115,7 @@
             </div>
           </div>
         </div>
-        <div class="tweet-footer">loading</div>
+        <div id="tweets-end">loading</div>
       </div>
       {{!-- 推文卡片結束 --}}
     </div>
@@ -124,15 +124,4 @@
   {{> recommend-follow }}
 </div>
 
-<script>
-  const end = document.querySelector('.tweet-footer')
-
-  const intersectionObserver = new IntersectionObserver(
-    function (entries) {
-      if (entries[0].intersectionRatio <= 0) return
-      console.log('Loaded new items');
-    })
-
-  // 開始觀察
-  intersectionObserver.observe(end)
-</script>
+<script src="/javascripts/infinite-scroll-tweets.js"></script>

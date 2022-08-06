@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const bcrypt = require('bcrypt-nodejs')
 const helpers = require('../_helpers')
 const getTopUser = require('../helpers/top-user-helper')
