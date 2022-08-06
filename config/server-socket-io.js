@@ -1,10 +1,9 @@
 const { Server } = require('socket.io')
 const { User, Message } = require('../models/')
 const { Op } = require('sequelize')
-
-const io = new Server(3200, {
-  cors: { origin: ['http://localhost:3000'] }
-})
+const app = require('../app')
+const io =
+process.env.NODE_ENV === 'production' ? new Server(app) : new Server(3200, { cors: { origin: ['http://localhost:3000'] } })
 
 io.on('connect', async socket => {
   const userId = socket.handshake.query.userId
