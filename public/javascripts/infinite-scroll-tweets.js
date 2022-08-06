@@ -2,7 +2,7 @@
 dayjs.extend(window.dayjs_plugin_relativeTime)
 
 let page = 2
-const url = 'http://' + window.location.host + '/api/tweets/'
+const url = window.location.protocol + '//' + window.location.host + '/api/tweets/'
 const observeTarget = document.getElementById('tweets-end')
 
 const observer = new IntersectionObserver(function (entries) {
