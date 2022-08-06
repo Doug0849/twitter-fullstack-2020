@@ -3,7 +3,7 @@ const { User, Message } = require('../models/')
 const { Op } = require('sequelize')
 const app = require('../app')
 const io = new Server(app, {
-  cors: { origin: ['http://localhost:3000'] }
+  cors: { origin: ['http://localhost:3000', 'https://twitter-chatroom-dhal-team.herokuapp.com'] }
 })
 
 io.on('connect', async socket => {
