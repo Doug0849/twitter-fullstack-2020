@@ -1,0 +1,28 @@
+<div class="body-container">
+  {{> side-menu route='notifiaction'}}
+  {{!-- 中央部分 --}}
+  <div class="center-part border" id="center-part">
+    <div class="p-0" id="topic">
+      <h5 class="fw-bold border-bottom text-start mb-0 p-3">通知</h5>
+    </div>
+    {{!-- 通知卡片 --}}
+    <div class="scroll-part scrollbar">
+    {{#each notices}}
+    <div class="noti-card border-bottom p-3">
+        <img src="{{this.authorAvatar}}" alt="" class="logs-avatar rounded-circle" style="object-fit: cover; height: 40px; weight:40px;">
+        {{#ifCond this.objectType 'Followship'}}
+        <p class="text-black fw-bold text-start my-2">{{this.title}}</p>
+        {{else}}
+        <a href="/tweets/{{this.objectId}}/replies" class="d-block text-decoration-none text-black fw-bold text-start my-2">{{this.title}}</a>
+        {{/ifCond}}
+        <span class="text-start text-black-50">
+            {{this.description}}
+        </span>
+    </div>
+    {{/each}}
+    </div>
+    {{!-- 通知卡片結束 --}}
+  </div>
+  {{!-- 中央部分結束 --}}
+  {{> recommend-follow }}
+</div>

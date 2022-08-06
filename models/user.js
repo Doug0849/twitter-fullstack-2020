@@ -22,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'followerId',
         as: 'Followings'
       })
+      User.hasMany(models.Notice, { foreignKey: 'receivedId' })
+      User.hasMany(models.Notice, { foreignKey: 'objectId' })
     }
   }
   User.init(

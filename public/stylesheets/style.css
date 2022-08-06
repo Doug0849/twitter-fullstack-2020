@@ -294,6 +294,10 @@ body {
   color: #FF6600;
 }
 
+#info-icon {
+  width: 25px; 
+  height: 25px;
+}
 /* editinfo */
 .upload-photo:hover {
   filter: var(--base-filter);

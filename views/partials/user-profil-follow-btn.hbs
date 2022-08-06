@@ -1,4 +1,33 @@
 {{#if profileUser.isFollowed}}
+  {{#if profileUser.willNotice}}
+    <button
+      id="notice-btn"
+      data-userid="{{profileUser.id}}"
+      class="border border-brand rounded-circle bg-transparent me-3 mt-3 p-2"
+    >
+      <img
+        src="/stylesheets/svgs/noti.svg"
+        alt="active-noti"
+        id="noti-icon"
+        data-userid="{{profileUser.id}}"
+        style="filter: var(--base-filter);"
+      />
+    </button>
+  {{else}}
+    <button
+      id="notice-btn"
+      data-userid="{{profileUser.id}}"
+      class="border border-brand rounded-circle bg-transparent me-3 mt-3 p-2"
+    >
+      <img
+        src="/stylesheets/svgs/outline-noti.svg"
+        alt="deactivate-noti"
+        id="noti-icon"
+        data-userid="{{profileUser.id}}"
+        style="filter: var(--base-filter);"
+      />
+    </button>
+  {{/if}}
   <button
     id="follow"
     class="following-btn follow-item btn btn-brand rounded-pill me-3 mt-3 follow-id-{{profileUser.id}}"
