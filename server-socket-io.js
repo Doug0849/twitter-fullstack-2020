@@ -15,9 +15,7 @@ io.on('connect', async socket => {
   socket.on('connecting-chatroom', async () => {
     // 確認伺服器裡面沒有重複使用者
     const sockets = await io.fetchSockets()
-    if (sockets.some(socket =>
-      socket.data.id === userId &&
-    )) {
+    if (sockets.some(socket => socket.data.id === userId)) {
       return socket.disconnect()
     }
     const user = await User.findByPk(userId, { raw: true })
