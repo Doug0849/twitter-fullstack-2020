@@ -19,7 +19,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       have_read: {
-        type: Sequelize.INTEGER
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       created_at: {
         allowNull: false,

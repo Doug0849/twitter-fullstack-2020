@@ -3,32 +3,37 @@
     {{>side-menu route='chatroom'}}
   </div>
   {{!-- connect-list --}}
-  <div class="col-6 row border p-0" id="chat-room">
-    <div class="col-4 border-end p-0">
-      <h5 class="fw-bold border-bottom mb-0 p-3">線上使用者<span id="connection-count" class="fw-bold">(1)</span></h5>
+  <div class="col-6 row border h-100 p-0" id="chat-room">
+    <div class="col-4 border-end h-100 p-0">
+      <div class="title-wrapper d-flex justify-content-between border-bottom mb-0 px-3 pt-3 pb-2">
+        <h5 class="fw-bold ">訊息</h5>
+        <i class="outline-msg"></i>
+      </div>
       {{!-- 每個使用者開始 --}}
-      <div class="connect-user" id="connect-users">
-        <div class="user-wrapper border-bottom my-3 ms-3">
+      <div class="users-list" id="users-list">
+        {{!-- <div class="user-wrapper border-bottom my-3 ms-3">
           <img src="/pic/default_avatar.png" alt="" class="avatar-sm rounded-circle" id="chatroom-avatar-{{this.id}}">
           <strong>Apple</strong>
           <span>@apple</span>
-        </div>
+          <div class="position-absolute w-100 v-100">click</div>
+        </div> --}}
       </div>
       {{!-- 每個使用者結束 --}}
     </div>
-    <div class="col-8 p-0">
-      <h5 class="fw-bold border-bottom mb-0 p-3">公開聊天室</h5>
+    <div class="col-8 p-0 h-100 pb-3">
+      <h5 class="fw-bold m-0 pt-3 ps-3" id="logs-title-name">私人訊息</h5>
+      <p class="fw-bold fs-6 text-black-50 border-bottom m-0 ps-3 pb-1" id="logs-title-account">@</p>
       <div class="row align-items-end w-100 m-0" style="height: calc(100% - 50px);">
         <div class="col-12 p-0">
           <div id="main-logs" class="scrollbar">
             {{!-- 這是系統訊息 --}}
-            {{!-- <div class="row g-0 justify-content-center mb-2">
+            <div class="row g-0 justify-content-center mb-2">
               <span
                 class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">這裡是系統訊息</span>
-            </div> --}}
+            </div>
             {{!-- 這是系統訊息 --}}
             {{!-- 這是收到的訊息 --}}
-            {{!-- <div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
+            <div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
               <div class="col-1 me-2">
                 <img src="/pic/default_avatar.png" alt="" class="logs-avatar ms-2 rounded-circle"
                   style="object-fit: cover; height: 40px; weight:40px;">
@@ -41,10 +46,10 @@
               </div>
               <small class="col-12 msg-time text-black-50 fw-bold text-start"
                 style="font-size: 0.5rem; margin-left: 53px;">下午 4:21</small>
-            </div> --}}
+            </div>
             {{!-- 這是收到的訊息 --}}
             {{!-- 這是發送的訊息 --}}
-            {{!-- <div class="row g-0 align-items-end justify-content-end mb-2 me-2">
+            <div class="row g-0 align-items-end justify-content-end mb-2 me-2">
               <div class="col-7 row justify-content-end">
                 <p class="col-auto sended-msg bg-brand fs-6 py-2 px-3 mb-0 fw-light text-white"
                   style="border-radius: 1rem 1rem 0 1rem;">
@@ -52,7 +57,7 @@
                 </p>
               </div>
               <small class="col-12 msg-time text-black-50 fw-bold text-end" style="font-size: 0.5rem;">下午 4:21</small>
-            </div> --}}
+            </div>
             {{!-- 這是發送的訊息 --}}
           </div>
           {{!-- 發送訊息區塊 --}}
@@ -61,7 +66,7 @@
             <label for="input-message" class="visually-hidden">input message</label>
             <input id="input-message" type="text"
               class="col-11 rounded-pill border-0 bg-secondary bg-opacity-10 py-1 px-3" placeholder="輸入訊息...">
-            <button type="submit" id="send-message" class="btn border-0 mb-0 col-auto p-0 ms-2"><img
+            <button type="submit" id="send-message" class="btn border-0 mb-0 col-auto p-0 ms-2" disabled><img
                 src="/stylesheets/svgs/send.svg" alt="" style="height: 30px; weight:30px;"></a>
           </form>
           {{!-- 發送訊息區塊 --}}

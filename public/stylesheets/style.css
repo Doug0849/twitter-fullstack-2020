@@ -349,7 +349,13 @@ input.form-control:focus {
 
 .user-list {
   border: 1px solid orange;
-  height:40%;
+  height: 40%;
   width: 60%;
   overflow-y: scroll;
+}
+
+/* private msg */
+.user-btn {
+  top: 0;
+  left: 0;
 }
