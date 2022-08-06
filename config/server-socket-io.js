@@ -1,9 +1,9 @@
-const socketIO = require('socket.io')
+const { Server } = require('socket.io')
 const { User, Message } = require('../models/')
 const { Op } = require('sequelize')
 const app = require('../app')
-const io = socketIO(app, {
-  cors: { origin: ['https://twitter-chatroom-dhal-team.herokuapp.com/'] }
+const io = new Server(app, {
+  cors: { origin: ['http://localhost:3000'] }
 })
 
 io.on('connect', async socket => {
