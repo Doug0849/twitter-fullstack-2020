@@ -1,4 +1,5 @@
 const helpers = require('../_helpers')
+const { getOffset } = require('../helpers/pagination-helper')
 const getTopUser = require('../helpers/top-user-helper')
 const {
   localFileHandler,
@@ -137,6 +138,10 @@ const apiController = {
   },
   getTweets: async (req, res, next) => {
     try {
+      const limit = 10
+      const page = Number(req.params.page)
+      console.log(page)
+      const offset = getOffset(limit, page)
       const currentUser = helpers.getUser(req)
       const followingsId = currentUser.Followings.map(user => user.id)
       const topUser = await getTopUser(currentUser)
@@ -148,7 +153,9 @@ const apiController = {
           { model: User, attributes: ['id', 'name', 'account', 'avatar'] },
           { model: Reply, attributes: ['id'] },
           { model: Like, attributes: ['id'] }
-        ]
+        ],
+        limit,
+        offset
       })
       const likedTweetsId = req.user?.Likes ? currentUser.Likes.map(lt => lt.TweetId) : []
       const data = tweets.map(tweets => ({

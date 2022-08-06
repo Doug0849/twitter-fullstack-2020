@@ -91,6 +91,7 @@ const tweetController = {
       const currentUser = helpers.getUser(req)
       const followingsId = currentUser.Followings.map(user => user.id)
       const topUser = await getTopUser(currentUser)
+      const limit = 10
       const tweets = await Tweet.findAll({
         where: { UserId: [...followingsId, currentUser.id] },
         order: [['createdAt', 'DESC']],
@@ -99,7 +100,8 @@ const tweetController = {
           { model: User, attributes: ['id', 'name', 'account', 'avatar'] },
           { model: Reply, attributes: ['id'] },
           { model: Like, attributes: ['id'] }
-        ]
+        ],
+        limit
       })
       const likedTweetsId = req.user?.Likes
         ? currentUser.Likes.map(lt => lt.TweetId)

@@ -4,7 +4,7 @@ const upload = require('../../middleware/multer')
 
 const apiController = require('../../controllers/api-controller')
 
-router.get('/tweets', apiController.getTweets)
+router.get('/tweets/:page', apiController.getTweets)
 
 router.get('/users/:id', apiController.getUserInfo)
 router.post(
