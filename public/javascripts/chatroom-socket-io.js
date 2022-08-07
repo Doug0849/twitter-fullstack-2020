@@ -5,6 +5,7 @@
     const socket = io({ query: { userId } })
 
     // 聊天室選取聊天室介面元素
+    // 從這開始
     const mainLogs = document.querySelector('#main-logs')
     if (mainLogs) {
       socket.on('connect', async () => {
@@ -48,14 +49,7 @@
       })
 
       // -------------------------------------------------
-      // function
-      function noticeOnline(userName) {
-        mainLogs.innerHTML = `
-  <div class="row g-0 justify-content-center mb-2">
-              <span
-                class="col-auto badge rounded-pill bg-secondary bg-opacity-25 py-1 px-2 fw-light text-secondary">${userName}上線了</span>
-            </div>` + mainLogs.innerHTML
-      }
+      
 
       function displayMessage(message, time) {
         mainLogs.innerHTML = `
@@ -168,6 +162,7 @@
         return word + ' ' + hour + ':' + timeArray[1]
       }
     }
+    // 到這裡
   } catch (err) {
     console.log(err)
   }

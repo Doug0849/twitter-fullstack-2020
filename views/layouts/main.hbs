@@ -32,8 +32,8 @@
 {{!-- 當路由進到聊天室，渲染聊天頁面，同時從後段帶入變數，來載入socket.io --}}
 <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"
   integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
-{{#if chatRoom}}
-<script src="/javascripts/chatroom-socket-io.js"></script>
-{{/if}}
 <script src="/javascripts/private-message.js"></script>
+{{#if chatRoom}}
+{{!-- <script src="/javascripts/chatroom-socket-io.js"></script> --}}
+{{/if}}
 </html>

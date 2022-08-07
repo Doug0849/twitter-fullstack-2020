@@ -93,11 +93,12 @@ io.on('connect', async socket => {
           }
         })
       }
-      const set = new Set()
-      const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
+      // const set = new Set()
+      // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
       // 傳訊給所有人online事件
-      io.emit('online', socket.data.name, noDubleUserList)
+      io.emit('online', socket.data.name, userList)
       // 回應自己show-public-history事件
+      console.log(messages)
       return io.to(socket.data.account).emit('show-public-history', messages)
     }
   })
@@ -122,6 +123,7 @@ io.on('connect', async socket => {
       readId: userId
     }
     await Readuser.create(readUserData)
+    console.log('2')
     return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
   })
 
@@ -207,10 +209,12 @@ io.on('connect', async socket => {
   })
 })
 
+// 伺服器監聽
 httpServer.listen(port, () => {
   console.info(`Example app listening on http://localhost:${port}`)
 })
 
+// 以下為是否有新訊息確認
 async function checkNewMessage(userId, selfSocketId) {
   try {
     let noNewPv = false
