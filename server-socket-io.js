@@ -14,132 +14,132 @@ io.on('connect', async socket => {
   socket.on('check-new-message', () => {
     checkNewMessage(userId, socketId)
   })
-  // 以下為聊天室
-  socket.on('connecting-chatroom', async () => {
-    io.socketsJoin('public')
-    // 確認伺服器裡面沒有重複使用者
-    const sockets = await io.fetchSockets()
-    if (sockets.some(socket => socket.data.id === userId)) {
-      return socket.disconnect()
-    }
-    // 從資料庫找出使用者自己的資料
-    const user = await User.findByPk(userId, { raw: true })
-    // 進到聊天室就找出所有公共訊息
-    const messages = await Message.findAll({
-      where: { receiverId: null },
-      include: {
-        model: User,
-        attributes: ['name', 'avatar'],
-        as: 'Sender'
-      },
-      raw: true,
-      nest: true,
-      order: [['createdAt', 'ASC']]
-    })
-    // 將所有公共訊息的id序號存入清單
-    const messagesId = messages.map(message => {
-      return message.id
-    })
-    // 最後一個message是否已經被自己讀過
-    const lastReadMessage = await Readuser.findAll({
-      where: { readId: userId },
-      order: [['messageId', 'DESC']],
-      limit: 1,
-      raw: true
-    })
-    // 如果找不到任何符合的，代表一次都沒讀過，全部message寫入Readuser做紀錄
-    if (!lastReadMessage[0]) {
-      messagesId.map(async messageId => {
-        return await Readuser.create({
-          messageId: messageId,
-          readId: userId
-        })
-      })
-    }
-    // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
-    // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
-    const lastNoReadMessage = await Readuser.findAll({
-      where: { messageId: messagesId[messagesId.length - 1], readId: userId },
-      raw: true
-    })
-    if (!lastNoReadMessage[0]) {
-      messagesId.map(async id => {
-        if (id > lastReadMessage[0].messageId) {
-          return await Readuser.create({
-            messageId: id,
-            readId: userId
-          })
-        }
-      })
-    }
+  // // 以下為聊天室
+  // socket.on('connecting-chatroom', async () => {
+  //   io.socketsJoin('public')
+  //   // 確認伺服器裡面沒有重複使用者
+  //   const sockets = await io.fetchSockets()
+  //   if (sockets.some(socket => socket.data.id === userId)) {
+  //     return socket.disconnect()
+  //   }
+  //   // 從資料庫找出使用者自己的資料
+  //   const user = await User.findByPk(userId, { raw: true })
+  //   // 進到聊天室就找出所有公共訊息
+  //   const messages = await Message.findAll({
+  //     where: { receiverId: null },
+  //     include: {
+  //       model: User,
+  //       attributes: ['name', 'avatar'],
+  //       as: 'Sender'
+  //     },
+  //     raw: true,
+  //     nest: true,
+  //     order: [['createdAt', 'ASC']]
+  //   })
+  //   // 將所有公共訊息的id序號存入清單
+  //   const messagesId = messages.map(message => {
+  //     return message.id
+  //   })
+  //   // 最後一個message是否已經被自己讀過
+  //   const lastReadMessage = await Readuser.findAll({
+  //     where: { readId: userId },
+  //     order: [['messageId', 'DESC']],
+  //     limit: 1,
+  //     raw: true
+  //   })
+  //   // 如果找不到任何符合的，代表一次都沒讀過，全部message寫入Readuser做紀錄
+  //   if (!lastReadMessage[0]) {
+  //     messagesId.map(async messageId => {
+  //       return await Readuser.create({
+  //         messageId: messageId,
+  //         readId: userId
+  //       })
+  //     })
+  //   }
+  //   // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
+  //   // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
+  //   const lastNoReadMessage = await Readuser.findAll({
+  //     where: { messageId: messagesId[messagesId.length - 1], readId: userId },
+  //     raw: true
+  //   })
+  //   if (!lastNoReadMessage[0]) {
+  //     messagesId.map(async id => {
+  //       if (id > lastReadMessage[0].messageId) {
+  //         return await Readuser.create({
+  //           messageId: id,
+  //           readId: userId
+  //         })
+  //       }
+  //     })
+  //   }
 
-    // 將使用者資料存入socket.data
-    const userList = []
-    if (user) {
-      socket.data.id = user.id
-      socket.data.socketId = socketId
-      socket.data.name = user.name
-      socket.data.account = user.account
-      socket.data.avatar = user.avatar
-      socket.join(socket.data.account)
-      // 所有sockets在線使用者，將自己的socket資料存入使用者清單
-      if (sockets) {
-        sockets.forEach((socket, i) => {
-          userList[i] = {
-            id: socket.data.id,
-            name: socket.data.name,
-            account: socket.data.account,
-            avatar: socket.data.avatar
-          }
-        })
-      }
-      // const set = new Set()
-      // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
-      // 傳訊給所有人online事件
-      io.emit('online', socket.data.name, userList)
-      // 回應自己show-public-history事件
-      return io.to(socket.data.account).emit('show-public-history', messages)
-    }
-  })
+  //   // 將使用者資料存入socket.data
+  //   const userList = []
+  //   if (user) {
+  //     socket.data.id = user.id
+  //     socket.data.socketId = socketId
+  //     socket.data.name = user.name
+  //     socket.data.account = user.account
+  //     socket.data.avatar = user.avatar
+  //     socket.join(socket.data.account)
+  //     // 所有sockets在線使用者，將自己的socket資料存入使用者清單
+  //     if (sockets) {
+  //       sockets.forEach((socket, i) => {
+  //         userList[i] = {
+  //           id: socket.data.id,
+  //           name: socket.data.name,
+  //           account: socket.data.account,
+  //           avatar: socket.data.avatar
+  //         }
+  //       })
+  //     }
+  //     // const set = new Set()
+  //     // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
+  //     // 傳訊給所有人online事件
+  //     io.emit('online', socket.data.name, userList)
+  //     // 回應自己show-public-history事件
+  //     return io.to(socket.data.account).emit('show-public-history', messages)
+  //   }
+  // })
 
-  socket.on('send-message', async (message, time) => {
-    const messageData = {
-      senderAvatar: socket.data.avatar,
-      senderId: socket.data.id,
-      receiveId: null,
-      content: message
-    }
-    await Message.create(messageData)
-    // 發送訊息後立刻寫入已讀當中
-    const lastMessageId = await Message.findAll({
-      where: { receiverId: null },
-      order: [['createdAt', 'DESC']],
-      limit: 1,
-      raw: true
-    })
-    const readUserData = {
-      messageId: lastMessageId[0].id,
-      readId: userId
-    }
-    await Readuser.create(readUserData)
-    return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
-  })
+  // socket.on('send-message', async (message, time) => {
+  //   const messageData = {
+  //     senderAvatar: socket.data.avatar,
+  //     senderId: socket.data.id,
+  //     receiveId: null,
+  //     content: message
+  //   }
+  //   await Message.create(messageData)
+  //   // 發送訊息後立刻寫入已讀當中
+  //   const lastMessageId = await Message.findAll({
+  //     where: { receiverId: null },
+  //     order: [['createdAt', 'DESC']],
+  //     limit: 1,
+  //     raw: true
+  //   })
+  //   const readUserData = {
+  //     messageId: lastMessageId[0].id,
+  //     readId: userId
+  //   }
+  //   await Readuser.create(readUserData)
+  //   return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
+  // })
 
-  socket.on('disconnect', async () => {
-    const userList = []
-    const sockets = await io.fetchSockets()
-    if (sockets) {
-      sockets.forEach((socket, i) => {
-        userList[i] = {
-          id: socket.data.id,
-          name: socket.data.name,
-          account: socket.data.account,
-          avatar: socket.data.avatar
-        }
-      })
-    }
-    return io.emit('disconnect-message', socket.data.name, userList)
-  })
+  // socket.on('disconnect', async () => {
+  //   const userList = []
+  //   const sockets = await io.fetchSockets()
+  //   if (sockets) {
+  //     sockets.forEach((socket, i) => {
+  //       userList[i] = {
+  //         id: socket.data.id,
+  //         name: socket.data.name,
+  //         account: socket.data.account,
+  //         avatar: socket.data.avatar
+  //       }
+  //     })
+  //   }
+  //   return io.emit('disconnect-message', socket.data.name, userList)
+  // })
   // 以上為聊天室
   // 以下為連上私人時的事件
   socket.on('connecting-private', async () => {

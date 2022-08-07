@@ -285,9 +285,10 @@ function formatTime(time) {
 }
 
 // 以下為確認是否有新的訊息通知
-setInterval(() => {
-  checkNewMessage()
-}, 1000)
+// setInterval(() => {
+//   checkNewMessage()
+// }, 1000)
+checkNewMessage()
 
 function checkNewMessage() {
   socket.emit('check-new-message')
