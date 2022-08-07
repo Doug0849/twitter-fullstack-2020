@@ -5,12 +5,13 @@ const httpServer = createServer(app)
 const port = process.env.PORT || 3000
 const io = new Server(httpServer, { /* options */ })
 
-const { User, Message, Notice, Readuser } = require('./models')
+const { User, Message, Notice, ReadMessage } = require('./models')
 const { Op } = require('sequelize')
 
 io.on('connect', async socket => {
   const userId = socket.handshake.query.userId
   const socketId = socket.id
+  // 前端定時發出 check-new-message 事件，接到後call checkNewMessage function。
   socket.on('check-new-message', () => {
     checkNewMessage(userId, socketId)
   })
@@ -41,7 +42,7 @@ io.on('connect', async socket => {
       return message.id
     })
     // 最後一個message是否已經被自己讀過
-    const lastReadMessage = await Readuser.findAll({
+    const lastReadMessage = await ReadMessage.findAll({
       where: { readId: userId },
       order: [['messageId', 'DESC']],
       limit: 1,
@@ -50,7 +51,7 @@ io.on('connect', async socket => {
     // 如果找不到任何符合的，代表一次都沒讀過，全部message寫入Readuser做紀錄
     if (!lastReadMessage[0]) {
       messagesId.map(async messageId => {
-        return await Readuser.create({
+        return await ReadMessage.create({
           messageId: messageId,
           readId: userId
         })
@@ -59,7 +60,7 @@ io.on('connect', async socket => {
     const messageLastIdIndex = messagesId.length - 1
     const messageId = messagesId[messageLastIdIndex]
     // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
-    const noReadMsg = await Readuser.findAll({
+    const noReadMsg = await ReadMessage.findAll({
       where: { messageId: messageId, readId: userId },
       raw: true
     })
@@ -67,7 +68,7 @@ io.on('connect', async socket => {
     if (!noReadMsg[0]) {
       messagesId.map(async id => {
         if (id > lastReadMessage[0].messageId) {
-          return await Readuser.create({
+          return await ReadMessage.create({
             messageId: id,
             readId: userId
           })
@@ -121,7 +122,7 @@ io.on('connect', async socket => {
       messageId: lastMessageId[0].id,
       readId: userId
     }
-    await Readuser.create(readUserData)
+    await ReadMessage.create(readUserData)
     return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
   })
 
@@ -212,7 +213,7 @@ httpServer.listen(port, () => {
   console.info(`Example app listening on http://localhost:${port}`)
 })
 
-// 以下為是否有新訊息確認
+// 以下為是否有新訊息的確認 function，呼喚後，各自針對三個不同的通知發出不同的事件。
 async function checkNewMessage(userId, selfSocketId) {
   try {
     let noNewPv = false
@@ -248,9 +249,9 @@ async function checkNewMessage(userId, selfSocketId) {
       limit: 1,
       raw: true
     })
-    const lastPublicMessageId = lastPublicMessage[0].id
+    const lastPublicMessageId = lastPublicMessage[0].id || ''
     // 確認讀過的資料中，有沒有我對最後一個message id讀過的紀錄
-    const checkReadLastMessage = await Readuser.findAll({
+    const checkReadLastMessage = await ReadMessage.findAll({
       where: { messageId: lastPublicMessageId, readId: userId },
       raw: true
     })

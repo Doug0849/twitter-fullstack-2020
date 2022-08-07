@@ -288,7 +288,6 @@ function formatTime(time) {
 setInterval(() => {
   checkNewMessage()
 }, 1000)
-// checkNewMessage()
 
 function checkNewMessage() {
   socket.emit('check-new-message')
