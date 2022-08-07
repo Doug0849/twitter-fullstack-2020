@@ -56,43 +56,43 @@ io.on('connect', async socket => {
         })
       })
     }
-  //   // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
-  //   // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
-  //   const lastNoReadMessage = await Readuser.findAll({
-  //     where: { messageId: messagesId[messagesId.length - 1], readId: userId },
-  //     raw: true
-  //   })
-  //   if (!lastNoReadMessage[0]) {
-  //     messagesId.map(async id => {
-  //       if (id > lastReadMessage[0].messageId) {
-  //         return await Readuser.create({
-  //           messageId: id,
-  //           readId: userId
-  //         })
-  //       }
-  //     })
-  //   }
+    // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
+    // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
+    const lastNoReadMessage = await Readuser.findAll({
+      where: { messageId: messagesId[messagesId.length - 1], readId: userId },
+      raw: true
+    })
+    if (!lastNoReadMessage[0]) {
+      messagesId.map(async id => {
+        if (id > lastReadMessage[0].messageId) {
+          return await Readuser.create({
+            messageId: id,
+            readId: userId
+          })
+        }
+      })
+    }
 
-  //   // 將使用者資料存入socket.data
-  //   const userList = []
-  //   if (user) {
-  //     socket.data.id = user.id
-  //     socket.data.socketId = socketId
-  //     socket.data.name = user.name
-  //     socket.data.account = user.account
-  //     socket.data.avatar = user.avatar
-  //     socket.join(socket.data.account)
-  //     // 所有sockets在線使用者，將自己的socket資料存入使用者清單
-  //     if (sockets) {
-  //       sockets.forEach((socket, i) => {
-  //         userList[i] = {
-  //           id: socket.data.id,
-  //           name: socket.data.name,
-  //           account: socket.data.account,
-  //           avatar: socket.data.avatar
-  //         }
-  //       })
-  //     }
+    // 將使用者資料存入socket.data
+    const userList = []
+    if (user) {
+      socket.data.id = user.id
+      socket.data.socketId = socketId
+      socket.data.name = user.name
+      socket.data.account = user.account
+      socket.data.avatar = user.avatar
+      socket.join(socket.data.account)
+      // 所有sockets在線使用者，將自己的socket資料存入使用者清單
+      if (sockets) {
+        sockets.forEach((socket, i) => {
+          userList[i] = {
+            id: socket.data.id,
+            name: socket.data.name,
+            account: socket.data.account,
+            avatar: socket.data.avatar
+          }
+        })
+      }
   //     // const set = new Set()
   //     // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
   //     // 傳訊給所有人online事件
