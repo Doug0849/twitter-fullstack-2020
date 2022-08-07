@@ -76,34 +76,34 @@ io.on('connect', async socket => {
     //   })
     // }
 
-    // 將使用者資料存入socket.data
-    // const userList = []
-    // if (user) {
-    //   socket.data.id = user.id
-    //   socket.data.socketId = socketId
-    //   socket.data.name = user.name
-    //   socket.data.account = user.account
-    //   socket.data.avatar = user.avatar
-    //   socket.join(socket.data.account)
-    //   // 所有sockets在線使用者，將自己的socket資料存入使用者清單
-    //   if (sockets) {
-    //     sockets.forEach((socket, i) => {
-    //       userList[i] = {
-    //         id: socket.data.id,
-    //         name: socket.data.name,
-    //         account: socket.data.account,
-    //         avatar: socket.data.avatar
-    //       }
-    //     })
-    //   }
-    // }
-    //     // const set = new Set()
-    //     // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
-    //     // 傳訊給所有人online事件
-    //     io.emit('online', socket.data.name, userList)
-    //     // 回應自己show-public-history事件
-    //     return io.to(socket.data.account).emit('show-public-history', messages)
-    //   }
+    將使用者資料存入socket.data
+    const userList = []
+    if (user) {
+      socket.data.id = user.id
+      socket.data.socketId = socketId
+      socket.data.name = user.name
+      socket.data.account = user.account
+      socket.data.avatar = user.avatar
+      socket.join(socket.data.account)
+      // 所有sockets在線使用者，將自己的socket資料存入使用者清單
+      if (sockets) {
+        sockets.forEach((socket, i) => {
+          userList[i] = {
+            id: socket.data.id,
+            name: socket.data.name,
+            account: socket.data.account,
+            avatar: socket.data.avatar
+          }
+        })
+      }
+    }
+        // const set = new Set()
+        // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
+        // 傳訊給所有人online事件
+        io.emit('online', socket.data.name, userList)
+        // 回應自己show-public-history事件
+        return io.to(socket.data.account).emit('show-public-history', messages)
+      }
   })
 
   socket.on('send-message', async (message, time) => {
