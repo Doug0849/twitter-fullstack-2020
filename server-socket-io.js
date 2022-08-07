@@ -59,12 +59,11 @@ io.on('connect', async socket => {
     const messageLastIdIndex = messagesId.length - 1
     const messageId = messagesId[messageLastIdIndex]
     // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
-    // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
     const noReadMsg = await Readuser.findAll({
       where: { messageId: messageId, readId: userId },
       raw: true
     })
-    console.log(noReadMsg)
+    // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
     if (!noReadMsg[0]) {
       messagesId.map(async id => {
         if (id > lastReadMessage[0].messageId) {
