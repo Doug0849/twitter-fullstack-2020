@@ -3,9 +3,9 @@
 
 // 中間發文
 const tweetForm = document.querySelector('#tweet-form') || ''
-const tweetTextArea = document.querySelector(".description-input") || ''
-const tweetDescriptionLength = document.querySelector("#description-length") || ''
-const tweetSendBtn = document.querySelector("#center-send-button") || ''
+const tweetTextArea = document.querySelector('.description-input') || ''
+const tweetDescriptionLength = document.querySelector('#description-length') || ''
+const tweetSendBtn = document.querySelector('#center-send-button') || ''
 
 if (tweetForm) {
   tweetTextArea.addEventListener('keyup', function (event) {
@@ -43,9 +43,9 @@ if (tweetForm) {
 
 // 側邊推文modal
 const sideForm = document.querySelector('#side-form') || ''
-const sideTextArea = document.querySelector(".side-description-input") || ''
-const sideDescriptionLength = document.querySelector("#side-description-length") || ''
-const sideTweetBtn = document.querySelector("#side-btn-send") || ''
+const sideTextArea = document.querySelector('.side-description-input') || ''
+const sideDescriptionLength = document.querySelector('#side-description-length') || ''
+const sideTweetBtn = document.querySelector('#side-btn-send') || ''
 
 if (sideForm) {
   sideForm.addEventListener('keyup', function (event) {
@@ -83,9 +83,9 @@ if (sideForm) {
 
 // 回復推文按鈕監聽跟modal
 const replyForm = document.querySelectorAll('.reply-form') || ''
-const replyTextArea = document.querySelectorAll(".reply-description-input") || ''
-const replyDescriptionLength = document.querySelectorAll(".reply-description-length") || ''
-const replyTweetBtn = document.querySelectorAll(".reply-btn-send") || ''
+const replyTextArea = document.querySelectorAll('.reply-description-input') || ''
+const replyDescriptionLength = document.querySelectorAll('.reply-description-length') || ''
+const replyTweetBtn = document.querySelectorAll('.reply-btn-send') || ''
 
 if (replyForm) {
   replyForm.forEach((form, i) => {
@@ -116,9 +116,9 @@ if (replyForm) {
       if (e.target.classList.contains('reply-btn-send')) {
         e.preventDefault()
         e.stopPropagation()
-        let userId = e.target.dataset.userid
-        let tweetId = e.target.dataset.tweetid
-        let comment = document.querySelector(`#comment-${tweetId}`)
+        const userId = e.target.dataset.userid
+        const tweetId = e.target.dataset.tweetid
+        const comment = document.querySelector(`#comment-${tweetId}`)
         await axios.post(`/tweets/${tweetId}/replies`, {
           UserId: userId,
           TweetId: tweetId,

@@ -7,7 +7,8 @@
     </a>
     <a href="/users/notifiaction" class="position-relative">
       <i class="{{#ifCond route 'notifiaction'}}active-notice{{else}}default-notice{{/ifCond}}"></i>
-      <span class="position-absolute translate-middle bg-danger border border-light rounded-circle p-1" style="top: 30%; left:21%;"></span>
+      <span class="position-absolute translate-middle badge rounded-pill bg-danger text-danger py-0 px-1" id="notice"
+        style="top: 30%; left:23%;" hidden>‧</span>
       
     </a>
     <a href="/chatroom" class="position-relative">
@@ -20,7 +21,7 @@
       <span class="position-absolute translate-middle badge rounded-pill bg-danger text-danger py-0 px-1" id="private-notice" style="top: 30%; left:23%;" hidden>‧</span>
     </a>
     <a href="/users/{{currentUser.id}}/tweets">
-      <i class="{{#ifCond currentUser.id profileUser.id}}active-user{{else}}default-user{{/ifCond}}" data-userid="{{currentUser.id}}" id="chatroom"></i>
+      <i class="{{#ifCond currentUser.id profileUser.id}}active-user{{else}}default-user{{/ifCond}}" data-userid="{{currentUser.id}}" id="user-menu-item"></i>
     </a>
     <a href="/users/setting">
       <i class="{{#ifCond route 'setting'}}active-setting{{else}}default-setting{{/ifCond}}"></i>
