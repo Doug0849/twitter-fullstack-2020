@@ -64,17 +64,17 @@ io.on('connect', async socket => {
       where: { messageId: messageId, readId: userId },
       raw: true
     })
-    // console.log(lastmsg)
-    // if (!lastNoReadMessage[0]) {
-    //   messagesId.map(async id => {
-    //     if (id > lastReadMessage[0].messageId) {
-    //       return await Readuser.create({
-    //         messageId: id,
-    //         readId: userId
-    //       })
-    //     }
-    //   })
-    // }
+    console.log(lastmsg)
+    if (!lastmsg[0]) {
+      messagesId.map(async id => {
+        if (id > lastReadMessage[0].messageId) {
+          return await Readuser.create({
+            messageId: id,
+            readId: userId
+          })
+        }
+      })
+    }
 
     // 將使用者資料存入socket.data
     const userList = []
