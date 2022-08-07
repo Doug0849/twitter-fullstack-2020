@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt-nodejs')
 const helpers = require('../_helpers')
 const getTopUser = require('../helpers/top-user-helper')
+const { Op } = require('sequelize')
 
 const { User, Tweet, Like, Reply, Followship, Notice } = require('../models')
 
@@ -453,19 +454,32 @@ const userController = {
     }
   },
   getNotifiaction: async (req, res, next) => {
-    const currentUser = helpers.getUser(req)
-    const topUser = await getTopUser(currentUser)
-    const notices = await Notice.findAll({
-      where: { receivedId: currentUser.id },
-      order: [['createdAt', 'desc']],
-      raw: true
-    })
-    res.render('notice/notice', {
-      notices,
-      role: currentUser.role,
-      currentUser,
-      topUser
-    })
+    try {
+      const currentUser = helpers.getUser(req)
+      const topUser = await getTopUser(currentUser)
+
+      const yesterday = new Date(new Date() - 1000 * 60 * 60 * 24)
+      const notices = await Notice.findAll({
+        where: {
+          receivedId: currentUser.id,
+          [Op.or]: [{ isChecked: false }, { createdAt: { [Op.gt]: yesterday } }]
+        },
+        order: [['createdAt', 'desc']],
+        raw: true
+      })
+      await Notice.update(
+        { isChecked: true },
+        { where: { receivedId: currentUser.id, isChecked: false } }
+      )
+      res.render('notice/notice', {
+        notices,
+        role: currentUser.role,
+        currentUser,
+        topUser
+      })
+    } catch (err) {
+      next(err)
+    }
   }
 }
 
