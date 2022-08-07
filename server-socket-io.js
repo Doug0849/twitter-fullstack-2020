@@ -98,7 +98,6 @@ io.on('connect', async socket => {
       // 傳訊給所有人online事件
       io.emit('online', socket.data.name, userList)
       // 回應自己show-public-history事件
-      console.log(messages)
       return io.to(socket.data.account).emit('show-public-history', messages)
     }
   })
@@ -123,7 +122,6 @@ io.on('connect', async socket => {
       readId: userId
     }
     await Readuser.create(readUserData)
-    console.log('2')
     return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
   })
 

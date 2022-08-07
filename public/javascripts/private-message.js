@@ -20,14 +20,11 @@ if (mainLogs) {
     if (message === '') return
     socket.emit('send-message', message, time)
     displayMessage(message, time)
-    console.log('1')
     inputMessage.value = ''
   })
-  
+
   socket.on('show-public-history', messages => {
-    console.log('3')
     displayHistory(messages)
-    console.log('4')
   })
 
   socket.on('online', (someoneName, connectUsers) => {
@@ -109,6 +106,19 @@ if (mainLogs) {
               <small class="col-12 msg-time text-black-50 fw-bold text-start" style="font-size: 0.5rem; margin-left: 51px;">${time}</small>
           </div>
 ` + mainLogs.innerHTML
+  }
+
+  function displayHistory(messages) {
+    messages.forEach(msg => {
+      if (msg.senderId === userId) {
+        const time = formatTime(msg.createdAt)
+        return displayMessage(msg.content, time)
+      }
+      if (msg.senderId !== userId) {
+        const time = formatTime(msg.createdAt)
+        return receiveMessage(msg.Sender.avatar, msg.content, time)
+      }
+    })
   }
 }
 
@@ -195,6 +205,37 @@ if (privateMainLogs) {
             </div>
   ` + privateMainLogs.innerHTML
   }
+
+  function displayHistory(messages) {
+    messages.forEach(msg => {
+      if (msg.senderId === userId) {
+        const time = formatTime(msg.createdAt)
+        return PvDisplayMessage(msg.content, time)
+      }
+      if (msg.senderId !== userId) {
+        const time = formatTime(msg.createdAt)
+        return receiveMessage(msg.Sender.avatar, msg.content, time)
+      }
+    })
+  }
+
+  function receiveMessage(someoneAvatar, message, time) {
+    privateMainLogs.innerHTML = `
+<div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
+            <div class="col-1">
+              <img src="${someoneAvatar}" alt="" class="logs-avatar ms-2 rounded-circle"
+                style="object-fit: cover; height: 40px; weight:40px;">
+            </div>
+            <div class="col-11 row justify-content-start">
+              <p class="col-auto received-msg bg-secondary bg-opacity-25 fs-6 py-2 px-3 mb-0 fw-light"
+                style="border-radius: 1rem 1rem 1rem 0; max-weight:50%; margin-left: 20px;">
+                ${message}
+              </p>
+            </div>
+              <small class="col-12 msg-time text-black-50 fw-bold text-start" style="font-size: 0.5rem; margin-left: 51px;">${time}</small>
+          </div>
+` + privateMainLogs.innerHTML
+  }
 }
 
 // 以下為function開始-------------------------------------------------
@@ -222,19 +263,6 @@ function createTime() {
 function getPvHistory(receiverId) {
   privateMainLogs.innerHTML = ''
   return socket.emit('get-pv-history', receiverId)
-}
-
-function displayHistory(messages) {
-  messages.forEach(msg => {
-    if (msg.senderId === userId) {
-      const time = formatTime(msg.createdAt)
-      return displayMessage(msg.content, time)
-    }
-    if (msg.senderId !== userId) {
-      const time = formatTime(msg.createdAt)
-      return receiveMessage(msg.Sender.avatar, msg.content, time)
-    }
-  })
 }
 
 function formatTime(time) {
