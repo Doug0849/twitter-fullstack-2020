@@ -295,9 +295,10 @@ body {
 }
 
 #info-icon {
-  width: 25px; 
+  width: 25px;
   height: 25px;
 }
+
 /* editinfo */
 .upload-photo:hover {
   filter: var(--base-filter);
@@ -330,7 +331,9 @@ input.form-control:focus {
   width: 100%;
   height: 100%;
 }
-#main-logs {
+
+#main-logs,
+#private-main-logs {
   max-height: calc(100vh - 105px);
   overflow-y: scroll;
   display: flex;
