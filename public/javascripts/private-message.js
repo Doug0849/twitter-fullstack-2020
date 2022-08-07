@@ -63,7 +63,7 @@
       // -------------------------------------------------
       // function
       function displayMessage(message, time) {
-        mainLogs.innerHTML = `
+        privateMainLogs.innerHTML = `
   <div class="row g-0 align-items-end justify-content-end mb-2 me-2">
               <div class="col-7 row justify-content-end">
                 <p class="col-auto sended-msg bg-brand fs-6 py-2 px-3 mb-0 fw-light text-white"
@@ -73,11 +73,11 @@
               </div>
                 <small class="col-12 msg-time text-black-50 fw-bold text-end" style="font-size: 0.5rem;">${time}</small>
             </div>
-  ` + mainLogs.innerHTML
+  ` + privateMainLogs.innerHTML
       }
 
       function receiveMessage(someoneAvatar, message, time) {
-        mainLogs.innerHTML = `
+        privateMainLogs.innerHTML = `
   <div class="row g-0 align-items-end justify-content-start mb-2" style="max-width: 60%;">
               <div class="col-1">
                 <img src="${someoneAvatar}" alt="" class="logs-avatar ms-2 rounded-circle"
@@ -91,7 +91,7 @@
               </div>
                 <small class="col-12 msg-time text-black-50 fw-bold text-start" style="font-size: 0.5rem; margin-left: 51px;">${time}</small>
             </div>
-  ` + mainLogs.innerHTML
+  ` + privateMainLogs.innerHTML
       }
 
       function shoAllUser(onlineList) {
@@ -129,7 +129,7 @@
       }
 
       function getPvHistory(receiverId) {
-        mainLogs.innerHTML = ''
+        privateMainLogs.innerHTML = ''
         return socket.emit('get-pv-history', receiverId)
       }
 
