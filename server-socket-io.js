@@ -76,7 +76,7 @@ io.on('connect', async socket => {
     //   })
     // }
 
-    將使用者資料存入socket.data
+    // 將使用者資料存入socket.data
     const userList = []
     if (user) {
       socket.data.id = user.id
