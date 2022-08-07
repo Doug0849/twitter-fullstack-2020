@@ -106,44 +106,44 @@ io.on('connect', async socket => {
     //   }
   })
 
-  // socket.on('send-message', async (message, time) => {
-  //   const messageData = {
-  //     senderAvatar: socket.data.avatar,
-  //     senderId: socket.data.id,
-  //     receiveId: null,
-  //     content: message
-  //   }
-  //   await Message.create(messageData)
-  //   // 發送訊息後立刻寫入已讀當中
-  //   const lastMessageId = await Message.findAll({
-  //     where: { receiverId: null },
-  //     order: [['createdAt', 'DESC']],
-  //     limit: 1,
-  //     raw: true
-  //   })
-  //   const readUserData = {
-  //     messageId: lastMessageId[0].id,
-  //     readId: userId
-  //   }
-  //   await Readuser.create(readUserData)
-  //   return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
-  // })
+  socket.on('send-message', async (message, time) => {
+    const messageData = {
+      senderAvatar: socket.data.avatar,
+      senderId: socket.data.id,
+      receiveId: null,
+      content: message
+    }
+    await Message.create(messageData)
+    // 發送訊息後立刻寫入已讀當中
+    const lastMessageId = await Message.findAll({
+      where: { receiverId: null },
+      order: [['createdAt', 'DESC']],
+      limit: 1,
+      raw: true
+    })
+    const readUserData = {
+      messageId: lastMessageId[0].id,
+      readId: userId
+    }
+    await Readuser.create(readUserData)
+    return socket.broadcast.emit('receive-message', socket.data.avatar, message, time)
+  })
 
-  // socket.on('disconnect', async () => {
-  //   const userList = []
-  //   const sockets = await io.fetchSockets()
-  //   if (sockets) {
-  //     sockets.forEach((socket, i) => {
-  //       userList[i] = {
-  //         id: socket.data.id,
-  //         name: socket.data.name,
-  //         account: socket.data.account,
-  //         avatar: socket.data.avatar
-  //       }
-  //     })
-  //   }
-  //   return io.emit('disconnect-message', socket.data.name, userList)
-  // })
+  socket.on('disconnect', async () => {
+    const userList = []
+    const sockets = await io.fetchSockets()
+    if (sockets) {
+      sockets.forEach((socket, i) => {
+        userList[i] = {
+          id: socket.data.id,
+          name: socket.data.name,
+          account: socket.data.account,
+          avatar: socket.data.avatar
+        }
+      })
+    }
+    return io.emit('disconnect-message', socket.data.name, userList)
+  })
   // 以上為聊天室
   // 以下為連上私人時的事件
   socket.on('connecting-private', async () => {
