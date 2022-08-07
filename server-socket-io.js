@@ -93,13 +93,14 @@ io.on('connect', async socket => {
           }
         })
       }
-  //     // const set = new Set()
-  //     // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
-  //     // 傳訊給所有人online事件
-  //     io.emit('online', socket.data.name, userList)
-  //     // 回應自己show-public-history事件
-  //     return io.to(socket.data.account).emit('show-public-history', messages)
-  //   }
+    }
+    //     // const set = new Set()
+    //     // const noDubleUserList = userList.filter(u => !set.has(u.id) ? set.add(u.id) : false)
+    //     // 傳訊給所有人online事件
+    //     io.emit('online', socket.data.name, userList)
+    //     // 回應自己show-public-history事件
+    //     return io.to(socket.data.account).emit('show-public-history', messages)
+    //   }
   })
 
   // socket.on('send-message', async (message, time) => {
