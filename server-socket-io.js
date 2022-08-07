@@ -16,12 +16,12 @@ io.on('connect', async socket => {
   })
   // // 以下為聊天室
   socket.on('connecting-chatroom', async () => {
-    // io.socketsJoin('public')
-    // // 確認伺服器裡面沒有重複使用者
-    // const sockets = await io.fetchSockets()
-    // if (sockets.some(socket => socket.data.id === userId)) {
-    //   return socket.disconnect()
-    // }
+    io.socketsJoin('public')
+    // 確認伺服器裡面沒有重複使用者
+    const sockets = await io.fetchSockets()
+    if (sockets.some(socket => socket.data.id === userId)) {
+      return socket.disconnect()
+    }
   //   // 從資料庫找出使用者自己的資料
   //   const user = await User.findByPk(userId, { raw: true })
   //   // 進到聊天室就找出所有公共訊息
