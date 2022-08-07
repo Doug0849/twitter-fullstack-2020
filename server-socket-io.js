@@ -36,26 +36,26 @@ io.on('connect', async socket => {
       nest: true,
       order: [['createdAt', 'ASC']]
     })
-    // // 將所有公共訊息的id序號存入清單
-    // const messagesId = messages.map(message => {
-    //   return message.id
-    // })
-    // // 最後一個message是否已經被自己讀過
-    // const lastReadMessage = await Readuser.findAll({
-    //   where: { readId: userId },
-    //   order: [['messageId', 'DESC']],
-    //   limit: 1,
-    //   raw: true
-    // })
-    // // 如果找不到任何符合的，代表一次都沒讀過，全部message寫入Readuser做紀錄
-    // if (!lastReadMessage[0]) {
-    //   messagesId.map(async messageId => {
-    //     return await Readuser.create({
-    //       messageId: messageId,
-    //       readId: userId
-    //     })
-    //   })
-    // }
+    // 將所有公共訊息的id序號存入清單
+    const messagesId = messages.map(message => {
+      return message.id
+    })
+    // 最後一個message是否已經被自己讀過
+    const lastReadMessage = await Readuser.findAll({
+      where: { readId: userId },
+      order: [['messageId', 'DESC']],
+      limit: 1,
+      raw: true
+    })
+    // 如果找不到任何符合的，代表一次都沒讀過，全部message寫入Readuser做紀錄
+    if (!lastReadMessage[0]) {
+      messagesId.map(async messageId => {
+        return await Readuser.create({
+          messageId: messageId,
+          readId: userId
+        })
+      })
+    }
     // // 確認是否最後一個訊息沒有讀，如果找不出資料代表沒讀
     // // 就從上一個有找到的message_id + 1開始，到最後一個，全部寫入，如果有找出代表有讀過
     // const lastNoReadMessage = await Readuser.findAll({
